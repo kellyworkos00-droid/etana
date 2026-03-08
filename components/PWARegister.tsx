@@ -10,6 +10,7 @@ type BeforeInstallPromptEvent = Event & {
 
 export default function PWARegister() {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [showFallback, setShowFallback] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -17,10 +18,8 @@ export default function PWARegister() {
     }
 
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/sw.js").catch(() => {
-          // Registration failures are non-fatal for browsing.
-        });
+      navigator.serviceWorker.register("/sw.js").catch(() => {
+        // Registration failures are non-fatal for browsing.
       });
     }
 
@@ -30,6 +29,12 @@ export default function PWARegister() {
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
+    if (isIos && !isStandalone) {
+      setShowFallback(true);
+    }
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
@@ -48,18 +53,26 @@ export default function PWARegister() {
     }
   };
 
-  if (!installPrompt) {
+  if (!installPrompt && !showFallback) {
     return null;
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleInstall}
-      className="fixed bottom-24 right-4 z-[60] inline-flex items-center gap-2 rounded-full bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-xl transition hover:bg-primary-700 md:bottom-6"
-      aria-label="Install Eterna app"
-    >
-      <FiDownload /> Install App
-    </button>
+    <div className="fixed bottom-24 right-4 z-[60] md:bottom-6">
+      {installPrompt ? (
+        <button
+          type="button"
+          onClick={handleInstall}
+          className="inline-flex items-center gap-2 rounded-full bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-xl transition hover:bg-primary-700"
+          aria-label="Install Eterna app"
+        >
+          <FiDownload /> Install App
+        </button>
+      ) : (
+        <div className="max-w-[220px] rounded-2xl border border-rose-200 bg-white/95 px-3 py-2 text-xs text-gray-700 shadow-xl backdrop-blur">
+          On iPhone, tap Share then "Add to Home Screen" to install.
+        </div>
+      )}
+    </div>
   );
 }
