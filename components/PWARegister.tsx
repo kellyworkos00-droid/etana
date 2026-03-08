@@ -70,7 +70,7 @@ export default function PWARegister() {
         </button>
       ) : (
         <div className="max-w-[220px] rounded-2xl border border-rose-200 bg-white/95 px-3 py-2 text-xs text-gray-700 shadow-xl backdrop-blur">
-          On iPhone, tap Share then "Add to Home Screen" to install.
+          On iPhone, tap Share then &quot;Add to Home Screen&quot; to install.
         </div>
       )}
     </div>
