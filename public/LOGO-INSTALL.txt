@@ -1,0 +1,7 @@
+Place your uploaded logo image here with this exact filename:
+
+eterna-logo.png
+
+Used by:
+- components/Navbar.tsx
+- components/Footer.tsx
