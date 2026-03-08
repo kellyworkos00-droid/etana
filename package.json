@@ -2,10 +2,10 @@
   "name": "eterna",
   "version": "1.0.0",
   "private": true,
-  "packageManager": "npm@10.8.2",
+  "packageManager": "pnpm@9.15.9",
   "engines": {
     "node": "20.x",
-    "npm": "10.x"
+    "pnpm": "9.x"
   },
   "scripts": {
     "dev": "next dev",
