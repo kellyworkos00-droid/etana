@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   FiShoppingCart,
   FiEye,
@@ -260,9 +261,11 @@ export default function FeaturedProducts() {
               style={{ animationDelay: `${product.id * 70}ms` }}
             >
               <div className="relative h-64 overflow-hidden bg-gray-100">
-                <img
+                <Image
                   src={product.image}
                   alt={product.name}
+                  fill
+                  sizes="(max-width: 640px) 82vw, (max-width: 1280px) 340px, 320px"
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 {product.discount > 0 && (

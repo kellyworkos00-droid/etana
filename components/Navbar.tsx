@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import {
@@ -60,7 +61,13 @@ export default function Navbar() {
         >
           <div className="flex h-16 items-center justify-between px-4 sm:px-6">
             <Link href="/" className="flex items-center">
-              <img src="/logo.png" alt="Eterna logo" className="h-9 w-auto sm:h-10 object-contain" />
+              <Image
+                src="/logo.png"
+                alt="Eterna logo"
+                width={160}
+                height={40}
+                className="h-9 w-auto sm:h-10 object-contain"
+              />
             </Link>
 
             <div className="hidden md:flex items-center gap-7">

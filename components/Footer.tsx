@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { FiMail, FiPhone, FiMapPin, FiFacebook, FiTwitter, FiInstagram, FiLinkedin } from "react-icons/fi";
 
 export default function Footer() {
@@ -12,13 +13,15 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
-            <img
+            <Image
               src="/logo.png"
               alt="Eterna logo"
+              width={192}
+              height={64}
               className="mb-4 h-16 w-auto object-contain"
             />
-            <p className="mb-4 text-slate-300/90 leading-relaxed">
-              Kenya's trusted partner for bulk orders. Quality products at wholesale prices with
+            <p className="mb-4 text-gray-600 leading-relaxed">
+              Kenya&apos;s trusted partner for bulk orders. Quality products at wholesale prices with
               reliable delivery across the country.
             </p>
             <div className="flex space-x-4">

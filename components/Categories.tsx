@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   FiBox,
   FiHome,
@@ -106,9 +107,11 @@ export default function Categories() {
                 href={category.link}
                 className={`group relative overflow-hidden rounded-3xl border border-white/40 shadow-md transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl ${category.size}`}
               >
-                <img
+                <Image
                   src={category.image}
                   alt={category.name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
 
