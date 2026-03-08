@@ -162,12 +162,13 @@ export default function Navbar() {
                   0
                 </span>
               </button>
-              <button
-                aria-label="Account"
+              <Link
+                href="/profile"
+                aria-label="Profile"
                 className="rounded-lg border border-gray-200 bg-white/80 p-2 text-gray-700 transition hover:border-primary-300 hover:text-primary-700"
               >
                 <FiUser className="text-lg" />
-              </button>
+              </Link>
               <Link
                 href="/quote"
                 className="ml-1 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700"

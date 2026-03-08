@@ -64,6 +64,16 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/account" className="transition hover:text-primary-700">
+                  Account
+                </Link>
+              </li>
+              <li>
+                <Link href="/profile" className="transition hover:text-primary-700">
+                  Profile
+                </Link>
+              </li>
+              <li>
                 <Link href="/faq" className="transition hover:text-primary-700">
                   FAQ
                 </Link>
@@ -92,6 +102,16 @@ export default function Footer() {
               <li>
                 <Link href="/privacy" className="transition hover:text-primary-700">
                   Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/cookies" className="transition hover:text-primary-700">
+                  Cookies Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/location" className="transition hover:text-primary-700">
+                  Location
                 </Link>
               </li>
               <li>
