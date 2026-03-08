@@ -86,7 +86,7 @@ export default function CheckoutPage() {
                 <h2 className="text-lg font-semibold text-gray-900">Payment Info</h2>
               </div>
 
-              <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition hover:border-primary-300">
                   <input type="radio" name="payment" defaultChecked className="accent-primary-600" />
                   Card
@@ -99,7 +99,15 @@ export default function CheckoutPage() {
                   <input type="radio" name="payment" className="accent-primary-600" />
                   Bank
                 </label>
+                <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition hover:border-primary-300">
+                  <input type="radio" name="payment" className="accent-primary-600" />
+                  Cash on Delivery
+                </label>
               </div>
+
+              <p className="mb-4 rounded-lg border border-rose-100 bg-rose-50/50 px-3 py-2 text-xs text-gray-600">
+                Cash on Delivery is available in selected delivery zones. Our team will confirm eligibility before dispatch.
+              </p>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <label className="text-sm text-gray-700 sm:col-span-2">
@@ -168,7 +176,9 @@ export default function CheckoutPage() {
                 Complete Checkout
               </button>
 
-              <p className="mt-3 text-center text-xs text-gray-500">Secure checkout. Your payment info is encrypted.</p>
+              <p className="mt-3 text-center text-xs text-gray-500">
+                Secure checkout. Card and mobile payments are encrypted. Cash on Delivery is supported in eligible areas.
+              </p>
             </div>
           </aside>
         </div>
