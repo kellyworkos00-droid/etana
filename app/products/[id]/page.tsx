@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { FiArrowLeft, FiCheckCircle, FiPackage, FiShield, FiTruck } from "react-icons/fi";
 import { products } from "@/lib/products";
 import { getProductByIdFromDb, getProductsFromDb } from "@/lib/server/products-db";
+import ProductPurchasePanel from "@/components/ProductPurchasePanel";
 
 type ProductPageProps = {
   params: {
@@ -86,18 +87,20 @@ export default async function ProductDetailsPage({ params }: ProductPageProps) {
               </div>
             </div>
 
-            <div className="mt-6 flex flex-wrap gap-3">
+            <ProductPurchasePanel
+              id={currentProduct.id}
+              name={currentProduct.name}
+              image={currentProduct.image}
+              price={currentProduct.bulkPrice}
+              minOrder={currentProduct.minOrder}
+            />
+
+            <div className="mt-4 flex flex-wrap gap-3">
               <Link
                 href="/quote"
-                className="inline-flex items-center rounded-xl bg-primary-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-700"
-              >
-                Request Quote
-              </Link>
-              <Link
-                href="/contact"
                 className="inline-flex items-center rounded-xl border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-700 transition hover:border-primary-300 hover:text-primary-700"
               >
-                Talk to Sales
+                Need custom pricing? Request Quote
               </Link>
             </div>
 
