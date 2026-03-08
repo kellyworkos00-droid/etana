@@ -10,7 +10,7 @@ export default function ContactPage() {
         <section className="space-y-3 lg:col-span-1">
           <article className="rounded-xl border border-gray-200 bg-gray-50 p-4">
             <h2 className="font-semibold text-gray-900">Call Us</h2>
-            <p className="mt-1 text-sm text-gray-600">+254 700 000 000</p>
+            <p className="mt-1 text-sm text-gray-600">+254 118 407 660</p>
           </article>
           <article className="rounded-xl border border-gray-200 bg-gray-50 p-4">
             <h2 className="font-semibold text-gray-900">Email</h2>

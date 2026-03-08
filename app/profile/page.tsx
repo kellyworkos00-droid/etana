@@ -27,7 +27,7 @@ export default function ProfilePage() {
             <label className="text-sm text-gray-700">
               Phone number
               <input
-                defaultValue="+254 700 000 000"
+                defaultValue="+254 118 407 660"
                 className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none ring-primary-200 transition focus:ring"
               />
             </label>

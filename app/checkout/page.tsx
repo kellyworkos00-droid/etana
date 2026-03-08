@@ -74,7 +74,7 @@ export default function CheckoutPage() {
                   <input
                     type="tel"
                     className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
-                    placeholder="+254 700 000 000"
+                    placeholder="+254 118 407 660"
                   />
                 </label>
               </div>
