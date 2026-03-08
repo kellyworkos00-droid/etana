@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FiArrowLeft, FiCheckCircle, FiPackage, FiShield, FiTruck } from "react-icons/fi";
-import { getProductById, products } from "@/lib/products";
+import { products } from "@/lib/products";
+import { getProductByIdFromDb, getProductsFromDb } from "@/lib/server/products-db";
 
 type ProductPageProps = {
   params: {
@@ -14,9 +15,9 @@ export function generateStaticParams() {
   return products.map((product) => ({ id: String(product.id) }));
 }
 
-export default function ProductDetailsPage({ params }: ProductPageProps) {
+export default async function ProductDetailsPage({ params }: ProductPageProps) {
   const productId = Number(params.id);
-  const product = getProductById(productId);
+  const product = await getProductByIdFromDb(productId);
 
   if (!product) {
     notFound();
@@ -24,7 +25,8 @@ export default function ProductDetailsPage({ params }: ProductPageProps) {
 
   const currentProduct = product as (typeof products)[number];
 
-  const similarProducts = products
+  const allProducts = await getProductsFromDb();
+  const similarProducts = allProducts
     .filter((item) => item.category === currentProduct.category && item.id !== currentProduct.id)
     .slice(0, 3);
 
