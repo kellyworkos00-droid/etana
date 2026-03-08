@@ -8,7 +8,7 @@ import { FiArrowRight, FiFilter, FiSearch } from "react-icons/fi";
 type Product = {
   id: number;
   name: string;
-  category: "Food & Beverages" | "Home & Living" | "Health & Beauty";
+  category: "Groceries" | "Home & Living" | "Health & Beauty";
   price: number;
   bulkPrice: number;
   minOrder: number;
@@ -20,7 +20,7 @@ const products: Product[] = [
   {
     id: 1,
     name: "Premium Rice (50kg Bag)",
-    category: "Food & Beverages",
+    category: "Groceries",
     price: 4500,
     bulkPrice: 4200,
     minOrder: 10,
@@ -30,7 +30,7 @@ const products: Product[] = [
   {
     id: 2,
     name: "Cooking Oil (20L Jerry Can)",
-    category: "Food & Beverages",
+    category: "Groceries",
     price: 3200,
     bulkPrice: 2950,
     minOrder: 20,
@@ -40,7 +40,7 @@ const products: Product[] = [
   {
     id: 3,
     name: "Maize Flour (90kg Bag)",
-    category: "Food & Beverages",
+    category: "Groceries",
     price: 5800,
     bulkPrice: 5400,
     minOrder: 15,
@@ -60,7 +60,7 @@ const products: Product[] = [
   {
     id: 5,
     name: "Sugar (50kg Bag)",
-    category: "Food & Beverages",
+    category: "Groceries",
     price: 6500,
     bulkPrice: 6100,
     minOrder: 10,
@@ -70,7 +70,7 @@ const products: Product[] = [
   {
     id: 6,
     name: "Wheat Flour (50kg)",
-    category: "Food & Beverages",
+    category: "Groceries",
     price: 4800,
     bulkPrice: 4500,
     minOrder: 20,
@@ -158,7 +158,7 @@ export default function ProductsPage() {
                 className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
               >
                 <option value="all">All categories</option>
-                <option value="Food & Beverages">Food & Beverages</option>
+                <option value="Groceries">Groceries</option>
                 <option value="Home & Living">Home & Living</option>
                 <option value="Health & Beauty">Health & Beauty</option>
               </select>

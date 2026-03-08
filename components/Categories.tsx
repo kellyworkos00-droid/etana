@@ -13,14 +13,14 @@ import {
 const categories = [
   {
     id: 1,
-    name: "Food & Beverages",
+    name: "Groceries",
     icon: FiCoffee,
     count: 150,
     color: "bg-orange-500",
     image:
       "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&q=80",
     size: "md:col-span-2 md:row-span-2",
-    link: "/categories/food-beverages",
+    link: "/categories/groceries",
   },
   {
     id: 2,

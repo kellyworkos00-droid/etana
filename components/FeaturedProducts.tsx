@@ -17,7 +17,7 @@ import {
 type Product = {
   id: number;
   name: string;
-  category: "Food & Beverages" | "Home & Living" | "Health & Beauty";
+  category: "Groceries" | "Home & Living" | "Health & Beauty";
   price: number;
   bulkPrice: number;
   minOrder: number;
@@ -31,7 +31,7 @@ const products: Product[] = [
   {
     id: 1,
     name: "Premium Rice (50kg Bag)",
-    category: "Food & Beverages",
+    category: "Groceries",
     price: 4500,
     bulkPrice: 4200,
     minOrder: 10,
@@ -41,7 +41,7 @@ const products: Product[] = [
   {
     id: 2,
     name: "Cooking Oil (20L Jerry Can)",
-    category: "Food & Beverages",
+    category: "Groceries",
     price: 3200,
     bulkPrice: 2950,
     minOrder: 20,
@@ -51,7 +51,7 @@ const products: Product[] = [
   {
     id: 3,
     name: "Maize Flour (90kg Bag)",
-    category: "Food & Beverages",
+    category: "Groceries",
     price: 5800,
     bulkPrice: 5400,
     minOrder: 15,
@@ -71,7 +71,7 @@ const products: Product[] = [
   {
     id: 5,
     name: "Sugar (50kg Bag)",
-    category: "Food & Beverages",
+    category: "Groceries",
     price: 6500,
     bulkPrice: 6100,
     minOrder: 10,
@@ -81,7 +81,7 @@ const products: Product[] = [
   {
     id: 6,
     name: "Wheat Flour (50kg)",
-    category: "Food & Beverages",
+    category: "Groceries",
     price: 4800,
     bulkPrice: 4500,
     minOrder: 20,
@@ -116,7 +116,7 @@ export default function FeaturedProducts() {
 
   const filters: { key: FilterKey; label: string; helper: string }[] = [
     { key: "all", label: "All Products", helper: "Full catalog" },
-    { key: "food", label: "Food & Beverages", helper: "Best sellers" },
+    { key: "food", label: "Groceries", helper: "Best sellers" },
     { key: "home", label: "Home & Living", helper: "Business essentials" },
     { key: "health", label: "Health & Beauty", helper: "Hygiene must-haves" },
   ];
@@ -127,7 +127,7 @@ export default function FeaturedProducts() {
     }
 
     const categoryByFilter: Record<Exclude<FilterKey, "all">, Product["category"]> = {
-      food: "Food & Beverages",
+      food: "Groceries",
       home: "Home & Living",
       health: "Health & Beauty",
     };

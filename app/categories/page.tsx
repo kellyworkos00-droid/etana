@@ -4,11 +4,11 @@ import { FiArrowRight, FiGrid, FiLayers } from "react-icons/fi";
 
 const categoryItems = [
   {
-    name: "Food & Beverages",
+    name: "Groceries",
     count: 150,
     description: "Bulk grains, cooking essentials, and packaged goods.",
     image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&q=80",
-    href: "/categories/food-beverages",
+    href: "/categories/groceries",
   },
   {
     name: "Home & Living",
