@@ -257,10 +257,10 @@ export default function FeaturedProducts() {
           {filteredProducts.map((product) => (
             <div
               key={product.id}
-              className="group min-w-[82%] snap-start overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl sm:min-w-[340px] xl:min-w-[320px] animate-rise"
+              className="group min-w-[74%] snap-start overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl sm:min-w-[290px] xl:min-w-[270px] animate-rise"
               style={{ animationDelay: `${product.id * 70}ms` }}
             >
-              <div className="relative h-64 overflow-hidden bg-gray-100">
+              <div className="relative h-52 overflow-hidden bg-gray-100">
                 <Image
                   src={product.image}
                   alt={product.name}
@@ -297,17 +297,17 @@ export default function FeaturedProducts() {
                 </div>
               </div>
 
-              <div className="p-5">
+              <div className="p-4">
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
                   {product.category}
                 </p>
-                <h3 className="mb-2 line-clamp-2 text-lg font-semibold text-gray-900">
+                <h3 className="mb-2 line-clamp-2 text-base font-semibold text-gray-900">
                   {product.name}
                 </h3>
 
-                <div className="mb-3 rounded-xl bg-gray-50 p-3">
+                <div className="mb-3 rounded-xl bg-gray-50 p-2.5">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold text-primary-700">
+                    <span className="text-xl font-bold text-primary-700">
                       KES {product.bulkPrice.toLocaleString()}
                     </span>
                     <span className="text-sm text-gray-500 line-through decoration-1">
@@ -317,7 +317,7 @@ export default function FeaturedProducts() {
                   <p className="mt-1 text-xs text-gray-500">Wholesale unit rate</p>
                 </div>
 
-                <div className="mb-4 flex items-center justify-between text-xs text-gray-600">
+                <div className="mb-3 flex items-center justify-between text-xs text-gray-600">
                   <p>
                     Min. order: <span className="font-semibold text-gray-800">{product.minOrder} units</span>
                   </p>
@@ -330,12 +330,12 @@ export default function FeaturedProducts() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <button className="flex-1 rounded-lg bg-primary-600 py-2.5 font-medium text-white transition hover:bg-primary-700">
+                  <button className="flex-1 rounded-lg bg-primary-600 py-2 font-medium text-white transition hover:bg-primary-700">
                     Request Quote
                   </button>
                   <Link
                     href={`/products/${product.id}`}
-                    className="inline-flex items-center justify-center rounded-lg border border-gray-300 p-2.5 text-gray-700 transition hover:border-primary-600 hover:text-primary-700"
+                    className="inline-flex items-center justify-center rounded-lg border border-gray-300 p-2 text-gray-700 transition hover:border-primary-600 hover:text-primary-700"
                     aria-label={`View details for ${product.name}`}
                   >
                     <FiArrowRight />
