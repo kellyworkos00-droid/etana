@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { FiCheckCircle, FiMinus, FiPlus, FiShoppingCart } from "react-icons/fi";
 
 type ProductPurchasePanelProps = {
-  id: number;
+  id: string;
   name: string;
   image: string;
   price: number;
@@ -13,7 +13,7 @@ type ProductPurchasePanelProps = {
 };
 
 type CartItem = {
-  id: number;
+  id: string;
   name: string;
   image: string;
   price: number;

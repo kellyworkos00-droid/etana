@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -14,12 +14,18 @@ import {
   FiAward,
 } from "react-icons/fi";
 import { products, type Product } from "@/lib/products";
+import { fetchProductsFromApi } from "@/lib/store-api";
 
 type FilterKey = "all" | "food" | "home" | "health";
 
 export default function FeaturedProducts() {
+  const [catalog, setCatalog] = useState<Product[]>(products);
   const [activeTab, setActiveTab] = useState<FilterKey>("all");
   const carouselRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    fetchProductsFromApi().then((data) => setCatalog(data));
+  }, []);
 
   const filters: { key: FilterKey; label: string; helper: string }[] = [
     { key: "all", label: "All Products", helper: "Full catalog" },
@@ -30,7 +36,7 @@ export default function FeaturedProducts() {
 
   const filteredProducts = useMemo(() => {
     if (activeTab === "all") {
-      return products;
+      return catalog;
     }
 
     const categoryByFilter: Record<Exclude<FilterKey, "all">, Product["category"]> = {
@@ -39,8 +45,8 @@ export default function FeaturedProducts() {
       health: "Health & Beauty",
     };
 
-    return products.filter((product) => product.category === categoryByFilter[activeTab]);
-  }, [activeTab]);
+    return catalog.filter((product) => product.category === categoryByFilter[activeTab]);
+  }, [activeTab, catalog]);
 
   const totalSavings = useMemo(
     () =>
@@ -52,11 +58,11 @@ export default function FeaturedProducts() {
   );
 
   const bestSellerIds = useMemo(() => {
-    return [...products]
+    return [...catalog]
       .sort((a, b) => b.discount - a.discount)
       .slice(0, 3)
       .map((product) => product.id);
-  }, []);
+  }, [catalog]);
 
   const scrollProducts = (direction: "left" | "right") => {
     if (!carouselRef.current) {
@@ -161,11 +167,11 @@ export default function FeaturedProducts() {
           ref={carouselRef}
           className="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {filteredProducts.map((product) => (
+          {filteredProducts.map((product, index) => (
             <div
               key={product.id}
               className="group min-w-[74%] snap-start overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl sm:min-w-[290px] xl:min-w-[270px] animate-rise"
-              style={{ animationDelay: `${product.id * 70}ms` }}
+              style={{ animationDelay: `${index * 70}ms` }}
             >
               <div className="relative h-52 overflow-hidden bg-gray-100">
                 <Image

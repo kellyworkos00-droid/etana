@@ -1,17 +1,100 @@
-import Link from "next/link";
-import { FiChevronLeft, FiCreditCard, FiMapPin, FiTruck } from "react-icons/fi";
+"use client";
 
-const orderItems = [
-  { id: 1, name: "Premium Rice (50kg Bag)", qty: 2, price: 4200 },
-  { id: 2, name: "Cooking Oil (20L Jerry Can)", qty: 1, price: 2950 },
-  { id: 3, name: "Detergent Powder (25kg)", qty: 1, price: 2500 },
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import { FiChevronLeft, FiCreditCard, FiMapPin, FiTruck } from "react-icons/fi";
+import { createOrderInApi } from "@/lib/store-api";
+
+type PaymentMethod = "CARD" | "MPESA" | "BANK" | "COD";
+
+type CartItem = {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+};
+
+const fallbackItems: CartItem[] = [
+  { id: "1", name: "Premium Rice (50kg Bag)", quantity: 2, price: 4200 },
+  { id: "2", name: "Cooking Oil (20L Jerry Can)", quantity: 1, price: 2950 },
+  { id: "4", name: "Detergent Powder (25kg)", quantity: 1, price: 2500 },
 ];
 
-const subtotal = orderItems.reduce((sum, item) => sum + item.qty * item.price, 0);
-const shipping = 750;
-const total = subtotal + shipping;
+function getCartItems(): CartItem[] {
+  if (typeof window === "undefined") {
+    return fallbackItems;
+  }
+
+  try {
+    const value = window.localStorage.getItem("eterna-cart");
+    if (!value) {
+      return fallbackItems;
+    }
+
+    const parsed = JSON.parse(value) as Array<{ id: string; name: string; price: number; quantity: number }>;
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      return fallbackItems;
+    }
+
+    return parsed.map((item) => ({
+      id: String(item.id),
+      name: item.name,
+      price: Number(item.price),
+      quantity: Number(item.quantity),
+    }));
+  } catch {
+    return fallbackItems;
+  }
+}
 
 export default function CheckoutPage() {
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("CARD");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [addressLine1, setAddressLine1] = useState("");
+  const [city, setCity] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const orderItems = useMemo(() => getCartItems(), []);
+  const subtotal = useMemo(() => orderItems.reduce((sum, item) => sum + item.quantity * item.price, 0), [orderItems]);
+  const shipping = 750;
+  const total = subtotal + shipping;
+
+  const handleCheckout = async () => {
+    if (!firstName || !lastName || !addressLine1 || !city || !phone) {
+      setMessage("Please fill in required shipping details.");
+      return;
+    }
+
+    setSubmitting(true);
+    setMessage(null);
+
+    try {
+      const order = await createOrderInApi({
+        customerName: `${firstName} ${lastName}`.trim(),
+        customerPhone: phone,
+        customerEmail: email || undefined,
+        addressLine1,
+        city,
+        paymentMethod,
+        items: orderItems.map((item) => ({
+          productId: String(item.id),
+          quantity: item.quantity,
+        })),
+      });
+
+      setMessage(order?.orderNumber ? `Order created: ${order.orderNumber}` : "Order created successfully.");
+      window.localStorage.removeItem("eterna-cart");
+    } catch {
+      setMessage("Could not create order. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-white to-rose-50/40 pb-24 pt-28 md:pb-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -39,43 +122,27 @@ export default function CheckoutPage() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <label className="text-sm text-gray-700">
                   First Name
-                  <input
-                    type="text"
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
-                    placeholder="John"
-                  />
+                  <input value={firstName} onChange={(e) => setFirstName(e.target.value)} type="text" className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5" placeholder="John" />
                 </label>
                 <label className="text-sm text-gray-700">
                   Last Name
-                  <input
-                    type="text"
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
-                    placeholder="Doe"
-                  />
+                  <input value={lastName} onChange={(e) => setLastName(e.target.value)} type="text" className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5" placeholder="Doe" />
                 </label>
                 <label className="text-sm text-gray-700 sm:col-span-2">
                   Street Address
-                  <input
-                    type="text"
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
-                    placeholder="123 Business Street"
-                  />
+                  <input value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} type="text" className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5" placeholder="123 Business Street" />
                 </label>
                 <label className="text-sm text-gray-700">
                   City
-                  <input
-                    type="text"
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
-                    placeholder="Nairobi"
-                  />
+                  <input value={city} onChange={(e) => setCity(e.target.value)} type="text" className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5" placeholder="Nairobi" />
                 </label>
                 <label className="text-sm text-gray-700">
                   Phone Number
-                  <input
-                    type="tel"
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
-                    placeholder="+254 118 407 660"
-                  />
+                  <input value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5" placeholder="+254 118 407 660" />
+                </label>
+                <label className="text-sm text-gray-700 sm:col-span-2">
+                  Email (optional)
+                  <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5" placeholder="you@company.com" />
                 </label>
               </div>
             </div>
@@ -87,54 +154,17 @@ export default function CheckoutPage() {
               </div>
 
               <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition hover:border-primary-300">
-                  <input type="radio" name="payment" defaultChecked className="accent-primary-600" />
-                  Card
-                </label>
-                <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition hover:border-primary-300">
-                  <input type="radio" name="payment" className="accent-primary-600" />
-                  M-Pesa
-                </label>
-                <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition hover:border-primary-300">
-                  <input type="radio" name="payment" className="accent-primary-600" />
-                  Bank
-                </label>
-                <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition hover:border-primary-300">
-                  <input type="radio" name="payment" className="accent-primary-600" />
-                  Cash on Delivery
-                </label>
+                {(["CARD", "MPESA", "BANK", "COD"] as const).map((method) => (
+                  <label key={method} className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition hover:border-primary-300">
+                    <input type="radio" name="payment" checked={paymentMethod === method} onChange={() => setPaymentMethod(method)} className="accent-primary-600" />
+                    {method === "MPESA" ? "M-Pesa" : method === "COD" ? "Cash on Delivery" : method}
+                  </label>
+                ))}
               </div>
 
-              <p className="mb-4 rounded-lg border border-rose-100 bg-rose-50/50 px-3 py-2 text-xs text-gray-600">
+              <p className="rounded-lg border border-rose-100 bg-rose-50/50 px-3 py-2 text-xs text-gray-600">
                 Cash on Delivery is available in selected delivery zones. Our team will confirm eligibility before dispatch.
               </p>
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <label className="text-sm text-gray-700 sm:col-span-2">
-                  Card Number
-                  <input
-                    type="text"
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
-                    placeholder="1234 5678 9012 3456"
-                  />
-                </label>
-                <label className="text-sm text-gray-700">
-                  Expiry Date
-                  <input
-                    type="text"
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
-                    placeholder="MM/YY"
-                  />
-                </label>
-                <label className="text-sm text-gray-700">
-                  CVV
-                  <input
-                    type="text"
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
-                    placeholder="123"
-                  />
-                </label>
-              </div>
             </div>
           </section>
 
@@ -148,37 +178,23 @@ export default function CheckoutPage() {
               <div className="space-y-3 border-b border-gray-200 pb-4">
                 {orderItems.map((item) => (
                   <div key={item.id} className="flex items-start justify-between gap-3 text-sm">
-                    <p className="text-gray-700">
-                      {item.name}
-                      <span className="ml-1 text-gray-500">x{item.qty}</span>
-                    </p>
-                    <p className="font-semibold text-gray-900">KES {(item.qty * item.price).toLocaleString()}</p>
+                    <p className="text-gray-700">{item.name}<span className="ml-1 text-gray-500">x{item.quantity}</span></p>
+                    <p className="font-semibold text-gray-900">KES {(item.quantity * item.price).toLocaleString()}</p>
                   </div>
                 ))}
               </div>
 
               <div className="space-y-2 py-4 text-sm">
-                <div className="flex items-center justify-between text-gray-600">
-                  <span>Subtotal</span>
-                  <span>KES {subtotal.toLocaleString()}</span>
-                </div>
-                <div className="flex items-center justify-between text-gray-600">
-                  <span>Shipping</span>
-                  <span>KES {shipping.toLocaleString()}</span>
-                </div>
-                <div className="flex items-center justify-between border-t border-gray-200 pt-3 text-base font-bold text-gray-900">
-                  <span>Total</span>
-                  <span>KES {total.toLocaleString()}</span>
-                </div>
+                <div className="flex items-center justify-between text-gray-600"><span>Subtotal</span><span>KES {subtotal.toLocaleString()}</span></div>
+                <div className="flex items-center justify-between text-gray-600"><span>Shipping</span><span>KES {shipping.toLocaleString()}</span></div>
+                <div className="flex items-center justify-between border-t border-gray-200 pt-3 text-base font-bold text-gray-900"><span>Total</span><span>KES {total.toLocaleString()}</span></div>
               </div>
 
-              <button className="w-full rounded-lg bg-primary-600 py-3 font-semibold text-white transition hover:bg-primary-700">
-                Complete Checkout
+              <button onClick={handleCheckout} disabled={submitting} className="w-full rounded-lg bg-primary-600 py-3 font-semibold text-white transition hover:bg-primary-700 disabled:opacity-70">
+                {submitting ? "Submitting..." : "Complete Checkout"}
               </button>
 
-              <p className="mt-3 text-center text-xs text-gray-500">
-                Secure checkout. Card and mobile payments are encrypted. Cash on Delivery is supported in eligible areas.
-              </p>
+              {message ? <p className="mt-3 text-center text-xs text-gray-600">{message}</p> : null}
             </div>
           </aside>
         </div>

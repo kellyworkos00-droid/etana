@@ -1,7 +1,7 @@
 export type ProductCategory = "Groceries" | "Home & Living" | "Health & Beauty";
 
 export type Product = {
-  id: number;
+  id: string;
   name: string;
   category: ProductCategory;
   price: number;
@@ -13,7 +13,7 @@ export type Product = {
 
 export const products: Product[] = [
   {
-    id: 1,
+    id: "1",
     name: "Premium Rice (50kg Bag)",
     category: "Groceries",
     price: 4500,
@@ -23,7 +23,7 @@ export const products: Product[] = [
     discount: 15,
   },
   {
-    id: 2,
+    id: "2",
     name: "Cooking Oil (20L Jerry Can)",
     category: "Groceries",
     price: 3200,
@@ -33,7 +33,7 @@ export const products: Product[] = [
     discount: 10,
   },
   {
-    id: 3,
+    id: "3",
     name: "Maize Flour (90kg Bag)",
     category: "Groceries",
     price: 5800,
@@ -43,7 +43,7 @@ export const products: Product[] = [
     discount: 12,
   },
   {
-    id: 4,
+    id: "4",
     name: "Detergent Powder (25kg)",
     category: "Home & Living",
     price: 2800,
@@ -53,7 +53,7 @@ export const products: Product[] = [
     discount: 20,
   },
   {
-    id: 5,
+    id: "5",
     name: "Sugar (50kg Bag)",
     category: "Groceries",
     price: 6500,
@@ -63,7 +63,7 @@ export const products: Product[] = [
     discount: 8,
   },
   {
-    id: 6,
+    id: "6",
     name: "Wheat Flour (50kg)",
     category: "Groceries",
     price: 4800,
@@ -73,7 +73,7 @@ export const products: Product[] = [
     discount: 15,
   },
   {
-    id: 7,
+    id: "7",
     name: "Tissue Paper (Pack of 100)",
     category: "Home & Living",
     price: 1800,
@@ -83,7 +83,7 @@ export const products: Product[] = [
     discount: 18,
   },
   {
-    id: 8,
+    id: "8",
     name: "Hand Sanitizer (5L)",
     category: "Health & Beauty",
     price: 3500,
@@ -94,6 +94,6 @@ export const products: Product[] = [
   },
 ];
 
-export function getProductById(id: number) {
+export function getProductById(id: string) {
   return products.find((product) => product.id === id);
 }

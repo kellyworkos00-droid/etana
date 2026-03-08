@@ -2,20 +2,26 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FiArrowRight, FiFilter, FiSearch } from "react-icons/fi";
 import { products, type Product } from "@/lib/products";
+import { fetchProductsFromApi } from "@/lib/store-api";
 
 type CategoryFilter = "all" | Product["category"];
 type SortKey = "popular" | "price-low" | "price-high";
 
 export default function ProductsPage() {
+  const [catalog, setCatalog] = useState<Product[]>(products);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [sort, setSort] = useState<SortKey>("popular");
 
+  useEffect(() => {
+    fetchProductsFromApi().then((data) => setCatalog(data));
+  }, []);
+
   const filteredProducts = useMemo(() => {
-    let output = products.filter((product) => {
+    let output = catalog.filter((product) => {
       const categoryMatch = category === "all" || product.category === category;
       const queryMatch = product.name.toLowerCase().includes(query.toLowerCase());
       return categoryMatch && queryMatch;
@@ -34,7 +40,7 @@ export default function ProductsPage() {
     }
 
     return output;
-  }, [category, query, sort]);
+  }, [catalog, category, query, sort]);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-white to-rose-50/35 px-4 pb-24 pt-28 md:pb-10">

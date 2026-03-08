@@ -3,8 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FiArrowLeft, FiCheckCircle, FiPackage, FiShield, FiTruck } from "react-icons/fi";
 import { products } from "@/lib/products";
-import { getProductByIdFromDb, getProductsFromDb } from "@/lib/server/products-db";
 import ProductPurchasePanel from "@/components/ProductPurchasePanel";
+import { fetchProductByIdOrSlugFromApi, fetchProductsFromApi } from "@/lib/store-api";
 
 type ProductPageProps = {
   params: {
@@ -17,8 +17,8 @@ export function generateStaticParams() {
 }
 
 export default async function ProductDetailsPage({ params }: ProductPageProps) {
-  const productId = Number(params.id);
-  const product = await getProductByIdFromDb(productId);
+  const productId = params.id;
+  const product = await fetchProductByIdOrSlugFromApi(productId);
 
   if (!product) {
     notFound();
@@ -26,7 +26,7 @@ export default async function ProductDetailsPage({ params }: ProductPageProps) {
 
   const currentProduct = product as (typeof products)[number];
 
-  const allProducts = await getProductsFromDb();
+  const allProducts = await fetchProductsFromApi();
   const similarProducts = allProducts
     .filter((item) => item.category === currentProduct.category && item.id !== currentProduct.id)
     .slice(0, 3);
