@@ -15,7 +15,7 @@ type ProductRow = {
 
 function mapRow(row: ProductRow): Product {
   return {
-    id: row.id,
+    id: String(row.id),
     name: row.name,
     category: row.category,
     price: Number(row.price),
@@ -32,7 +32,7 @@ export async function getProductsFromDb(): Promise<Product[]> {
   }
 
   try {
-    const result = await dbPool.query<ProductRow>(
+    const result = await dbPool.query(
       `
       SELECT id, name, category, price, bulk_price, min_order, image, discount
       FROM products
@@ -40,37 +40,46 @@ export async function getProductsFromDb(): Promise<Product[]> {
       `
     );
 
-    if (result.rows.length === 0) {
+    const rows = result.rows as ProductRow[];
+
+    if (rows.length === 0) {
       return fallbackProducts;
     }
 
-    return result.rows.map(mapRow);
+    return rows.map(mapRow);
   } catch {
     return fallbackProducts;
   }
 }
 
-export async function getProductByIdFromDb(id: number): Promise<Product | undefined> {
+export async function getProductByIdFromDb(id: string): Promise<Product | undefined> {
   if (!dbPool) {
     return fallbackProducts.find((product) => product.id === id);
   }
 
+  const numericId = Number(id);
+  if (!Number.isFinite(numericId)) {
+    return fallbackProducts.find((product) => product.id === id);
+  }
+
   try {
-    const result = await dbPool.query<ProductRow>(
+    const result = await dbPool.query(
       `
       SELECT id, name, category, price, bulk_price, min_order, image, discount
       FROM products
       WHERE id = $1
       LIMIT 1
       `,
-      [id]
+      [numericId]
     );
 
-    if (!result.rows[0]) {
+    const rows = result.rows as ProductRow[];
+
+    if (!rows[0]) {
       return fallbackProducts.find((product) => product.id === id);
     }
 
-    return mapRow(result.rows[0]);
+    return mapRow(rows[0]);
   } catch {
     return fallbackProducts.find((product) => product.id === id);
   }
