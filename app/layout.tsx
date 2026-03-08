@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Manrope, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PWARegister from "@/components/PWARegister";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -17,6 +18,20 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: "Eterna - Premium Bulk Products in Kenya",
   description: "Order quality products in bulk across Kenya. Best prices for wholesale and bulk orders.",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Eterna",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#be123c",
 };
 
 export default function RootLayout({
@@ -28,6 +43,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${manrope.variable} ${playfair.variable} font-sans`}>
         <Navbar />
+        <PWARegister />
         {children}
         <Footer />
       </body>
