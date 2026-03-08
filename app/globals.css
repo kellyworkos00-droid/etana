@@ -85,3 +85,22 @@ body {
   opacity: 1;
   background: #e11d48;
 }
+
+.showcase-swiper .swiper-pagination {
+  margin-top: 1rem;
+  position: relative;
+}
+
+.showcase-swiper .swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background: #fda4af;
+  opacity: 0.5;
+}
+
+.showcase-swiper .swiper-pagination-bullet-active {
+  width: 24px;
+  border-radius: 999px;
+  opacity: 1;
+  background: #dc2626;
+}
