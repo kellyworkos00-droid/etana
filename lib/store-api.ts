@@ -24,6 +24,20 @@ type SliderProduct = {
   discountPct: number;
 };
 
+type HomeSlide = {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  cta: string;
+  badge: string;
+  stats: string[];
+  image: string;
+  link: string;
+  sortOrder: number;
+  isActive: boolean;
+};
+
 type CreateOrderPayload = {
   customerName: string;
   customerPhone: string;
@@ -142,6 +156,25 @@ export async function fetchSliderOffersFromApi(): Promise<Product[]> {
     }));
   } catch {
     return [];
+  }
+}
+
+export async function fetchHomeSlidesFromApi() {
+  try {
+    const response = await fetch(`${getApiBaseUrl()}/content/home-slides`, { cache: "no-store" });
+    if (!response.ok) {
+      return [] as HomeSlide[];
+    }
+
+    const payload = (await response.json()) as unknown;
+    const data = extractData<HomeSlide[]>(payload);
+    if (!data || !Array.isArray(data)) {
+      return [] as HomeSlide[];
+    }
+
+    return data.sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999));
+  } catch {
+    return [] as HomeSlide[];
   }
 }
 

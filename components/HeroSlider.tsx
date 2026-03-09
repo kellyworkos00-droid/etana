@@ -2,7 +2,9 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, EffectFade } from "swiper/modules";
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import { FiArrowRight, FiCheckCircle, FiClock, FiShield, FiTruck } from "react-icons/fi";
+import { fetchHomeSlidesFromApi, LIVE_REFRESH_INTERVAL_MS } from "@/lib/store-api";
 
 // Import Swiper styles
 import "swiper/css";
@@ -45,7 +47,44 @@ const slides = [
   },
 ];
 
+type ManagedSlide = {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  cta: string;
+  badge: string;
+  stats: string[];
+  image: string;
+  link: string;
+};
+
 export default function HeroSlider() {
+  const [managedSlides, setManagedSlides] = useState<ManagedSlide[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const syncSlides = async () => {
+      const data = await fetchHomeSlidesFromApi();
+      if (mounted) {
+        setManagedSlides(data as ManagedSlide[]);
+      }
+    };
+
+    syncSlides();
+    const interval = window.setInterval(syncSlides, LIVE_REFRESH_INTERVAL_MS);
+
+    return () => {
+      mounted = false;
+      window.clearInterval(interval);
+    };
+  }, []);
+
+  const activeSlides = useMemo(() => {
+    return managedSlides.length > 0 ? managedSlides : slides;
+  }, [managedSlides]);
+
   return (
     <section className="relative overflow-hidden border-b border-rose-100 bg-white pt-24 md:pt-28">
       <div className="pointer-events-none absolute inset-0">
@@ -68,7 +107,7 @@ export default function HeroSlider() {
         loop={true}
         className="h-full"
       >
-        {slides.map((slide) => (
+        {activeSlides.map((slide) => (
           <SwiperSlide key={slide.id}>
             <div className="relative mx-auto flex min-h-[560px] w-full max-w-7xl items-center px-4 pb-12 sm:px-6 lg:px-8 md:min-h-[650px]">
               <div className="grid w-full gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
