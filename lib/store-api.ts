@@ -14,6 +14,16 @@ type AdminProduct = {
   discountPct: number;
 };
 
+type SliderProduct = {
+  id: string;
+  name: string;
+  category: string;
+  imageUrl: string;
+  bulkPrice: number;
+  minOrder: number;
+  discountPct: number;
+};
+
 type CreateOrderPayload = {
   customerName: string;
   customerPhone: string;
@@ -96,6 +106,34 @@ export async function fetchProductByIdOrSlugFromApi(idOrSlug: string): Promise<P
     return normalizeProduct(data);
   } catch {
     return fallbackProducts.find((product) => product.id === idOrSlug);
+  }
+}
+
+export async function fetchSliderOffersFromApi(): Promise<Product[]> {
+  try {
+    const response = await fetch(`${getApiBaseUrl()}/slider`, { cache: "no-store" });
+    if (!response.ok) {
+      return [];
+    }
+
+    const payload = (await response.json()) as unknown;
+    const data = extractData<SliderProduct[]>(payload);
+    if (!data || !Array.isArray(data)) {
+      return [];
+    }
+
+    return data.map((item) => ({
+      id: String(item.id),
+      name: item.name,
+      category: item.category as Product["category"],
+      price: Number(item.bulkPrice),
+      bulkPrice: Number(item.bulkPrice),
+      minOrder: Number(item.minOrder),
+      image: item.imageUrl,
+      discount: Number(item.discountPct ?? 0),
+    }));
+  } catch {
+    return [];
   }
 }
 

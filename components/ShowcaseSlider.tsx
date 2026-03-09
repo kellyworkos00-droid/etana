@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectCoverflow, Pagination } from "swiper/modules";
 import { FiArrowRight, FiBox, FiTrendingUp } from "react-icons/fi";
-import { fetchProductsFromApi, LIVE_REFRESH_INTERVAL_MS } from "@/lib/store-api";
+import { fetchProductsFromApi, fetchSliderOffersFromApi, LIVE_REFRESH_INTERVAL_MS } from "@/lib/store-api";
 import type { Product } from "@/lib/products";
 
 import "swiper/css";
@@ -90,6 +90,14 @@ export default function ShowcaseSlider() {
     let mounted = true;
 
     const syncOffers = async () => {
+      const sliderManaged = await fetchSliderOffersFromApi();
+      if (sliderManaged.length > 0) {
+        if (mounted) {
+          setOfferSlides(toOfferSlides(sliderManaged));
+        }
+        return;
+      }
+
       const products = await fetchProductsFromApi();
       const sortedOffers = [...products]
         .sort((a, b) => (b.discount || 0) - (a.discount || 0))
