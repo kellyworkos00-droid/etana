@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectCoverflow, Pagination } from "swiper/modules";
 import { FiArrowRight, FiBox, FiTrendingUp } from "react-icons/fi";
-import { fetchProductsFromApi } from "@/lib/store-api";
+import { fetchProductsFromApi, LIVE_REFRESH_INTERVAL_MS } from "@/lib/store-api";
 import type { Product } from "@/lib/products";
 
 import "swiper/css";
@@ -87,14 +87,36 @@ export default function ShowcaseSlider() {
   const [offerSlides, setOfferSlides] = useState<ShowcaseItem[]>([]);
 
   useEffect(() => {
-    fetchProductsFromApi().then((products) => {
+    let mounted = true;
+
+    const syncOffers = async () => {
+      const products = await fetchProductsFromApi();
       const sortedOffers = [...products]
         .sort((a, b) => (b.discount || 0) - (a.discount || 0))
         .filter((item) => item.discount > 0);
 
       const source = sortedOffers.length > 0 ? sortedOffers : products;
-      setOfferSlides(toOfferSlides(source));
-    });
+      if (mounted) {
+        setOfferSlides(toOfferSlides(source));
+      }
+    };
+
+    syncOffers();
+    const interval = window.setInterval(syncOffers, LIVE_REFRESH_INTERVAL_MS);
+
+    const onVisible = () => {
+      if (document.visibilityState === "visible") {
+        syncOffers();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      mounted = false;
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, []);
 
   const slides = useMemo(() => {

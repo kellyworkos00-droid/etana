@@ -14,7 +14,7 @@ import {
   FiAward,
 } from "react-icons/fi";
 import { products, type Product } from "@/lib/products";
-import { fetchProductsFromApi } from "@/lib/store-api";
+import { fetchProductsFromApi, LIVE_REFRESH_INTERVAL_MS } from "@/lib/store-api";
 
 type FilterKey = "all" | "food" | "home" | "health";
 
@@ -24,7 +24,31 @@ export default function FeaturedProducts() {
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    fetchProductsFromApi().then((data) => setCatalog(data));
+    let mounted = true;
+
+    const syncProducts = async () => {
+      const data = await fetchProductsFromApi();
+      if (mounted) {
+        setCatalog(data);
+      }
+    };
+
+    syncProducts();
+    const interval = window.setInterval(syncProducts, LIVE_REFRESH_INTERVAL_MS);
+
+    const onVisible = () => {
+      if (document.visibilityState === "visible") {
+        syncProducts();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      mounted = false;
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, []);
 
   const filters: { key: FilterKey; label: string; helper: string }[] = [

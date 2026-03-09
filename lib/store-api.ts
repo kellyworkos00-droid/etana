@@ -1,5 +1,7 @@
 import { products as fallbackProducts, type Product } from "@/lib/products";
 
+export const LIVE_REFRESH_INTERVAL_MS = 8000;
+
 type AdminProduct = {
   id: string;
   name: string;

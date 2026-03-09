@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { FiArrowRight, FiFilter, FiSearch } from "react-icons/fi";
 import { products, type Product } from "@/lib/products";
-import { fetchProductsFromApi } from "@/lib/store-api";
+import { fetchProductsFromApi, LIVE_REFRESH_INTERVAL_MS } from "@/lib/store-api";
 
 type CategoryFilter = "all" | Product["category"];
 type SortKey = "popular" | "price-low" | "price-high";
@@ -17,7 +17,31 @@ export default function ProductsPage() {
   const [sort, setSort] = useState<SortKey>("popular");
 
   useEffect(() => {
-    fetchProductsFromApi().then((data) => setCatalog(data));
+    let mounted = true;
+
+    const syncProducts = async () => {
+      const data = await fetchProductsFromApi();
+      if (mounted) {
+        setCatalog(data);
+      }
+    };
+
+    syncProducts();
+    const interval = window.setInterval(syncProducts, LIVE_REFRESH_INTERVAL_MS);
+
+    const onVisible = () => {
+      if (document.visibilityState === "visible") {
+        syncProducts();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      mounted = false;
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, []);
 
   const filteredProducts = useMemo(() => {
