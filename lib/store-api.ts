@@ -68,7 +68,7 @@ export async function fetchProductsFromApi(): Promise<Product[]> {
 
     const payload = (await response.json()) as unknown;
     const data = extractData<AdminProduct[]>(payload);
-    if (!data || !Array.isArray(data) || data.length === 0) {
+    if (!data || !Array.isArray(data)) {
       return fallbackProducts;
     }
 
