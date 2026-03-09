@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectCoverflow, Pagination } from "swiper/modules";
 import { FiArrowRight, FiBox, FiTrendingUp } from "react-icons/fi";
+import { fetchProductsFromApi } from "@/lib/store-api";
+import type { Product } from "@/lib/products";
 
 import "swiper/css";
 import "swiper/css/effect-coverflow";
@@ -19,6 +22,19 @@ type ShowcaseItem = {
   href: string;
   cta: string;
 };
+
+function toOfferSlides(items: Product[]): ShowcaseItem[] {
+  return items.slice(0, 6).map((item, index) => ({
+    id: index + 1,
+    title: item.name,
+    caption: `${item.category} Offer`,
+    metric: item.discount > 0 ? `Save ${item.discount}%` : "Featured",
+    detail: `Bulk from KES ${item.bulkPrice.toLocaleString()} with minimum order ${item.minOrder}.`,
+    image: item.image,
+    href: `/products/${item.id}`,
+    cta: "View Offer",
+  }));
+}
 
 const showcaseItems: ShowcaseItem[] = [
   {
@@ -68,6 +84,23 @@ const showcaseItems: ShowcaseItem[] = [
 ];
 
 export default function ShowcaseSlider() {
+  const [offerSlides, setOfferSlides] = useState<ShowcaseItem[]>([]);
+
+  useEffect(() => {
+    fetchProductsFromApi().then((products) => {
+      const sortedOffers = [...products]
+        .sort((a, b) => (b.discount || 0) - (a.discount || 0))
+        .filter((item) => item.discount > 0);
+
+      const source = sortedOffers.length > 0 ? sortedOffers : products;
+      setOfferSlides(toOfferSlides(source));
+    });
+  }, []);
+
+  const slides = useMemo(() => {
+    return offerSlides.length > 0 ? offerSlides : showcaseItems;
+  }, [offerSlides]);
+
   return (
     <section className="relative overflow-hidden py-16 sm:py-20">
       <div className="pointer-events-none absolute inset-0">
@@ -121,7 +154,7 @@ export default function ShowcaseSlider() {
             1280: { slidesPerView: 2.15, spaceBetween: 24 },
           }}
         >
-          {showcaseItems.map((item) => (
+          {slides.map((item) => (
             <SwiperSlide key={item.id}>
               <article className="group overflow-hidden rounded-3xl border border-rose-100 bg-white shadow-lg shadow-rose-100/60 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-rose-200/70">
                 <div className="relative h-64 sm:h-72">
