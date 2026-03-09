@@ -32,7 +32,15 @@ type CreateOrderPayload = {
   city: string;
   notes?: string;
   paymentMethod: "CARD" | "MPESA" | "BANK" | "COD";
+  promoCode?: string;
   items: Array<{ productId: string; quantity: number }>;
+};
+
+type PromoValidationResult = {
+  code: string;
+  discountType: "PERCENT" | "FIXED";
+  discountValue: number;
+  discountAmount: number;
 };
 
 function getApiBaseUrl() {
@@ -154,4 +162,37 @@ export async function createOrderInApi(payload: CreateOrderPayload) {
 
   const order = extractData<{ orderNumber: string; id: string }>(result);
   return order;
+}
+
+export async function validatePromoCodeInApi(params: {
+  code: string;
+  items: Array<{ productId: string; quantity: number }>;
+}): Promise<PromoValidationResult | null> {
+  try {
+    const response = await fetch(`${getApiBaseUrl()}/promos/validate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(params),
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const payload = (await response.json()) as unknown;
+    const data = extractData<PromoValidationResult>(payload);
+    if (!data) {
+      return null;
+    }
+
+    return {
+      ...data,
+      discountAmount: Number(data.discountAmount),
+      discountValue: Number(data.discountValue),
+    };
+  } catch {
+    return null;
+  }
 }

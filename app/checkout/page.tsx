@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { FiChevronLeft, FiCreditCard, FiMapPin, FiTruck } from "react-icons/fi";
-import { createOrderInApi } from "@/lib/store-api";
+import { createOrderInApi, validatePromoCodeInApi } from "@/lib/store-api";
 
 type PaymentMethod = "CARD" | "MPESA" | "BANK" | "COD";
 
@@ -57,11 +57,46 @@ export default function CheckoutPage() {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [promoCode, setPromoCode] = useState("");
+  const [promoDiscount, setPromoDiscount] = useState(0);
+  const [promoMessage, setPromoMessage] = useState<string | null>(null);
+  const [promoLoading, setPromoLoading] = useState(false);
 
   const orderItems = useMemo(() => getCartItems(), []);
   const subtotal = useMemo(() => orderItems.reduce((sum, item) => sum + item.quantity * item.price, 0), [orderItems]);
   const shipping = 750;
-  const total = subtotal + shipping;
+  const total = Math.max(0, subtotal - promoDiscount) + shipping;
+
+  const handleApplyPromo = async () => {
+    const code = promoCode.trim().toUpperCase();
+    if (!code) {
+      setPromoDiscount(0);
+      setPromoMessage("Enter a promo code.");
+      return;
+    }
+
+    setPromoLoading(true);
+    setPromoMessage(null);
+
+    const result = await validatePromoCodeInApi({
+      code,
+      items: orderItems.map((item) => ({
+        productId: String(item.id),
+        quantity: item.quantity,
+      })),
+    });
+
+    if (!result) {
+      setPromoDiscount(0);
+      setPromoMessage("Invalid or expired promo code.");
+      setPromoLoading(false);
+      return;
+    }
+
+    setPromoDiscount(result.discountAmount);
+    setPromoMessage(`Promo ${result.code} applied. Saved KES ${result.discountAmount.toLocaleString()}.`);
+    setPromoLoading(false);
+  };
 
   const handleCheckout = async () => {
     if (!firstName || !lastName || !addressLine1 || !city || !phone) {
@@ -80,6 +115,7 @@ export default function CheckoutPage() {
         addressLine1,
         city,
         paymentMethod,
+        promoCode: promoDiscount > 0 ? promoCode.trim().toUpperCase() : undefined,
         items: orderItems.map((item) => ({
           productId: String(item.id),
           quantity: item.quantity,
@@ -186,8 +222,30 @@ export default function CheckoutPage() {
 
               <div className="space-y-2 py-4 text-sm">
                 <div className="flex items-center justify-between text-gray-600"><span>Subtotal</span><span>KES {subtotal.toLocaleString()}</span></div>
+                <div className="flex items-center justify-between text-gray-600"><span>Discount</span><span>- KES {promoDiscount.toLocaleString()}</span></div>
                 <div className="flex items-center justify-between text-gray-600"><span>Shipping</span><span>KES {shipping.toLocaleString()}</span></div>
                 <div className="flex items-center justify-between border-t border-gray-200 pt-3 text-base font-bold text-gray-900"><span>Total</span><span>KES {total.toLocaleString()}</span></div>
+              </div>
+
+              <div className="mb-4 rounded-lg border border-gray-200 p-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Promo Code</p>
+                <div className="mt-2 flex gap-2">
+                  <input
+                    value={promoCode}
+                    onChange={(event) => setPromoCode(event.target.value)}
+                    placeholder="e.g. KENYA10"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyPromo}
+                    disabled={promoLoading}
+                    className="rounded-md border border-gray-300 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-70"
+                  >
+                    {promoLoading ? "Checking..." : "Apply"}
+                  </button>
+                </div>
+                {promoMessage ? <p className="mt-2 text-xs text-gray-600">{promoMessage}</p> : null}
               </div>
 
               <button onClick={handleCheckout} disabled={submitting} className="w-full rounded-lg bg-primary-600 py-3 font-semibold text-white transition hover:bg-primary-700 disabled:opacity-70">
