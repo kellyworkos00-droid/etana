@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { CART_UPDATED_EVENT, getCartCount } from "@/lib/cart";
+import MiniCartDrawer from "@/components/MiniCartDrawer";
 import {
   FiShoppingCart,
   FiSearch,
@@ -35,6 +36,7 @@ export default function Navbar() {
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [cartPulse, setCartPulse] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const pathname = usePathname();
 
   const mobileLinks = [
@@ -171,8 +173,9 @@ export default function Navbar() {
               >
                 <FiSearch className="text-lg" />
               </button>
-              <Link
-                href="/checkout"
+              <button
+                type="button"
+                onClick={() => setIsCartOpen(true)}
                 aria-label="Cart"
                 className="relative rounded-lg border border-gray-200 bg-white/80 p-2 text-gray-700 transition hover:border-primary-300 hover:text-primary-700"
               >
@@ -184,7 +187,7 @@ export default function Navbar() {
                 >
                   {cartCount}
                 </span>
-              </Link>
+              </button>
               <Link
                 href="/profile"
                 aria-label="Profile"
@@ -207,8 +210,9 @@ export default function Navbar() {
               >
                 <FiSearch className="text-lg" />
               </button>
-              <Link
-                href="/checkout"
+              <button
+                type="button"
+                onClick={() => setIsCartOpen(true)}
                 aria-label="Cart"
                 className="relative rounded-md border border-gray-200 bg-white/80 p-2 text-gray-700 transition hover:text-primary-700"
               >
@@ -220,11 +224,13 @@ export default function Navbar() {
                 >
                   {cartCount}
                 </span>
-              </Link>
+              </button>
             </div>
           </div>
         </div>
       </nav>
+
+      <MiniCartDrawer open={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
       <div className="fixed inset-x-0 bottom-4 z-50 px-4 md:hidden">
         <div className="mx-auto flex max-w-sm items-center justify-between rounded-2xl border border-rose-200/70 bg-white/90 px-2 py-2 shadow-2xl backdrop-blur-xl">
