@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Manrope, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import PWARegister from "@/components/PWARegister";
 
 const manrope = Manrope({
@@ -48,7 +47,6 @@ export default function RootLayout({
         <Navbar />
         <PWARegister />
         {children}
-        <Footer />
       </body>
     </html>
   );

@@ -39,6 +39,46 @@
         width: 110px;
         height: auto;
       }
+      .loader {
+        margin: 18px auto 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #9f1239;
+        font-size: 0.92rem;
+        font-weight: 600;
+      }
+      .pulse-ring {
+        width: 12px;
+        height: 12px;
+        border-radius: 999px;
+        border: 2px solid #be123c;
+        box-shadow: 0 0 0 0 rgba(190, 18, 60, 0.35);
+        animation: ping 1.6s infinite;
+      }
+      .dots {
+        display: inline-flex;
+        min-width: 18px;
+      }
+      .status {
+        margin-top: 12px;
+        font-size: 0.82rem;
+        color: #71717a;
+      }
+      @keyframes ping {
+        0% {
+          box-shadow: 0 0 0 0 rgba(190, 18, 60, 0.35);
+          transform: scale(1);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(190, 18, 60, 0);
+          transform: scale(1.05);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(190, 18, 60, 0);
+          transform: scale(1);
+        }
+      }
     </style>
   </head>
   <body>
@@ -46,6 +86,30 @@
       <img src="/logo.png" alt="Eterna logo" />
       <h1>You are offline</h1>
       <p>Connection is unavailable right now. Please reconnect and reload to continue shopping.</p>
+      <div class="loader" aria-live="polite">
+        <span class="pulse-ring" aria-hidden="true"></span>
+        Reconnecting<span class="dots" id="dots">.</span>
+      </div>
+      <p class="status" id="status">Waiting for internet connection...</p>
     </main>
+    <script>
+      (function () {
+        var dotCount = 1;
+        var dots = document.getElementById("dots");
+        var status = document.getElementById("status");
+
+        setInterval(function () {
+          dotCount = (dotCount % 3) + 1;
+          if (dots) dots.textContent = ".".repeat(dotCount);
+        }, 450);
+
+        window.addEventListener("online", function () {
+          if (status) status.textContent = "Connection restored. Reloading...";
+          setTimeout(function () {
+            window.location.reload();
+          }, 600);
+        });
+      })();
+    </script>
   </body>
 </html>
