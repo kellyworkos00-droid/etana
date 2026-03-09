@@ -4,7 +4,7 @@ export default function ProfilePage() {
   return (
     <StaticPageLayout
       title="My Profile"
-      subtitle="Keep your account information up to date for faster quotes, approvals, and deliveries."
+      subtitle="Keep your account information up to date for faster approvals and deliveries."
     >
       <div className="grid gap-5 lg:grid-cols-2">
         <section className="rounded-2xl border border-rose-100 p-5">

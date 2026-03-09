@@ -59,8 +59,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/quote" className="transition hover:text-primary-700">
-                  Request Quote
+                <Link href="/checkout" className="transition hover:text-primary-700">
+                  Cart / Checkout
                 </Link>
               </li>
               <li>

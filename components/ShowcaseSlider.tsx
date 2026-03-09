@@ -56,8 +56,8 @@ const showcaseItems: ShowcaseItem[] = [
     detail: "Plan stable replenishment with dependable lead times across Kenya.",
     image:
       "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=1400&q=80",
-    href: "/quote",
-    cta: "Request Quote",
+    href: "/checkout",
+    cta: "Open Cart",
   },
   {
     id: 3,

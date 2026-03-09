@@ -12,15 +12,18 @@ import {
   FiChevronLeft,
   FiChevronRight,
   FiAward,
+  FiCheckCircle,
 } from "react-icons/fi";
 import { products, type Product } from "@/lib/products";
 import { fetchProductsFromApi, LIVE_REFRESH_INTERVAL_MS } from "@/lib/store-api";
+import { addItemToCart } from "@/lib/cart";
 
 type FilterKey = "all" | "food" | "home" | "health";
 
 export default function FeaturedProducts() {
   const [catalog, setCatalog] = useState<Product[]>(products);
   const [activeTab, setActiveTab] = useState<FilterKey>("all");
+  const [addedProductId, setAddedProductId] = useState<string | null>(null);
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -98,6 +101,20 @@ export default function FeaturedProducts() {
       left: direction === "right" ? scrollAmount : -scrollAmount,
       behavior: "smooth",
     });
+  };
+
+  const handleAddToCart = (product: Product) => {
+    addItemToCart({
+      id: product.id,
+      name: product.name,
+      image: product.image,
+      price: product.bulkPrice,
+      quantity: Math.max(1, product.minOrder),
+      minOrder: product.minOrder,
+    });
+
+    setAddedProductId(product.id);
+    window.setTimeout(() => setAddedProductId((current) => (current === product.id ? null : current)), 1100);
   };
 
   return (
@@ -226,6 +243,8 @@ export default function FeaturedProducts() {
                     <FiEye className="text-xl" />
                   </Link>
                   <button
+                    type="button"
+                    onClick={() => handleAddToCart(product)}
                     className="rounded-full bg-white p-3 text-gray-900 shadow-md transition hover:bg-primary-600 hover:text-white"
                     aria-label={`Add ${product.name} to cart`}
                   >
@@ -267,8 +286,15 @@ export default function FeaturedProducts() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <button className="flex-1 rounded-lg bg-primary-600 py-2 font-medium text-white transition hover:bg-primary-700">
-                    Request Quote
+                  <button
+                    type="button"
+                    onClick={() => handleAddToCart(product)}
+                    className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2 font-medium text-white transition ${
+                      addedProductId === product.id ? "bg-emerald-600 animate-cart-bump" : "bg-primary-600 hover:bg-primary-700"
+                    }`}
+                  >
+                    {addedProductId === product.id ? <FiCheckCircle /> : <FiShoppingCart />}
+                    {addedProductId === product.id ? "Added" : "Add to Cart"}
                   </button>
                   <Link
                     href={`/products/${product.id}`}

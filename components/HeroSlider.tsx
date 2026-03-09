@@ -28,11 +28,11 @@ const slides = [
     title: "Delivery You Can Plan Around",
     subtitle: "Nationwide Logistics Network",
     description: "From Nairobi to regional hubs, Eterna keeps your stock moving with clear timelines and consistent handoff.",
-    cta: "Get Quote",
+    cta: "Start Cart",
     badge: "Operations-friendly",
     stats: ["Live order coordination", "Scheduled drop-offs", "Dedicated support line"],
     image: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=1920&q=80",
-    link: "/quote",
+    link: "/checkout",
   },
   {
     id: 3,
@@ -128,12 +128,19 @@ export default function HeroSlider() {
                   <p className="mt-5 max-w-2xl text-base leading-relaxed text-gray-600 sm:text-lg">{slide.description}</p>
 
                   <div className="mt-7 flex flex-wrap gap-3">
-                    <Link
-                      href={slide.link}
-                      className="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary-700"
-                    >
-                      {slide.cta} <FiArrowRight />
-                    </Link>
+                    {(() => {
+                      const ctaLink = slide.link === "/quote" ? "/checkout" : slide.link;
+                      const ctaLabel = /quote/i.test(slide.cta) ? "Start Cart" : slide.cta;
+
+                      return (
+                        <Link
+                          href={ctaLink}
+                          className="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary-700"
+                        >
+                          {ctaLabel} <FiArrowRight />
+                        </Link>
+                      );
+                    })()}
                     <Link
                       href="/contact"
                       className="inline-flex items-center rounded-xl border border-rose-200 px-6 py-3 text-sm font-semibold text-gray-700 transition hover:border-primary-300 hover:text-primary-700"

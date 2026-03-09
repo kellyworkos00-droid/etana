@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { CART_UPDATED_EVENT, getCartCount } from "@/lib/cart";
 import {
   FiShoppingCart,
   FiSearch,
@@ -32,13 +33,15 @@ const categoryGroups = [
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+  const [cartPulse, setCartPulse] = useState(false);
   const pathname = usePathname();
 
   const mobileLinks = [
     { href: "/", label: "Home", icon: FiHome },
     { href: "/products", label: "Products", icon: FiBox },
     { href: "/categories", label: "Categories", icon: FiGrid },
-    { href: "/quote", label: "Quote", icon: FiShoppingCart },
+    { href: "/checkout", label: "Cart", icon: FiShoppingCart },
     { href: "/account", label: "Account", icon: FiUser },
   ];
 
@@ -47,6 +50,21 @@ export default function Navbar() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const syncCount = () => {
+      setCartCount(getCartCount());
+      setCartPulse(true);
+      window.setTimeout(() => setCartPulse(false), 520);
+    };
+
+    syncCount();
+    window.addEventListener(CART_UPDATED_EVENT, syncCount);
+
+    return () => {
+      window.removeEventListener(CART_UPDATED_EVENT, syncCount);
+    };
   }, []);
 
   return (
@@ -153,15 +171,20 @@ export default function Navbar() {
               >
                 <FiSearch className="text-lg" />
               </button>
-              <button
+              <Link
+                href="/checkout"
                 aria-label="Cart"
                 className="relative rounded-lg border border-gray-200 bg-white/80 p-2 text-gray-700 transition hover:border-primary-300 hover:text-primary-700"
               >
                 <FiShoppingCart className="text-lg" />
-                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary-600 text-[10px] text-white">
-                  0
+                <span
+                  className={`absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-primary-600 px-1 text-[10px] text-white ${
+                    cartPulse ? "animate-cart-bump" : ""
+                  }`}
+                >
+                  {cartCount}
                 </span>
-              </button>
+              </Link>
               <Link
                 href="/profile"
                 aria-label="Profile"
@@ -170,10 +193,10 @@ export default function Navbar() {
                 <FiUser className="text-lg" />
               </Link>
               <Link
-                href="/quote"
+                href="/checkout"
                 className="ml-1 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700"
               >
-                Get Quote
+                Cart / Checkout
               </Link>
             </div>
 
@@ -184,12 +207,20 @@ export default function Navbar() {
               >
                 <FiSearch className="text-lg" />
               </button>
-              <button
+              <Link
+                href="/checkout"
                 aria-label="Cart"
-                className="rounded-md border border-gray-200 bg-white/80 p-2 text-gray-700 transition hover:text-primary-700"
+                className="relative rounded-md border border-gray-200 bg-white/80 p-2 text-gray-700 transition hover:text-primary-700"
               >
                 <FiShoppingCart className="text-lg" />
-              </button>
+                <span
+                  className={`absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-primary-600 px-1 text-[10px] text-white ${
+                    cartPulse ? "animate-cart-bump" : ""
+                  }`}
+                >
+                  {cartCount}
+                </span>
+              </Link>
             </div>
           </div>
         </div>

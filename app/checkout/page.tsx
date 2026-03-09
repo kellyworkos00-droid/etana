@@ -1,51 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { FiChevronLeft, FiCreditCard, FiMapPin, FiTruck } from "react-icons/fi";
+import Image from "next/image";
+import { useEffect, useMemo, useState } from "react";
+import { FiChevronLeft, FiCreditCard, FiMapPin, FiMinus, FiPlus, FiShoppingBag, FiTrash2, FiTruck } from "react-icons/fi";
 import { createOrderInApi, validatePromoCodeInApi } from "@/lib/store-api";
+import { clearCart, getCartItems, removeCartItem, updateCartItemQuantity, type CartItem } from "@/lib/cart";
 
 type PaymentMethod = "CARD" | "MPESA" | "BANK" | "COD";
-
-type CartItem = {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-};
-
-const fallbackItems: CartItem[] = [
-  { id: "1", name: "Premium Rice (50kg Bag)", quantity: 2, price: 4200 },
-  { id: "2", name: "Cooking Oil (20L Jerry Can)", quantity: 1, price: 2950 },
-  { id: "4", name: "Detergent Powder (25kg)", quantity: 1, price: 2500 },
-];
-
-function getCartItems(): CartItem[] {
-  if (typeof window === "undefined") {
-    return fallbackItems;
-  }
-
-  try {
-    const value = window.localStorage.getItem("eterna-cart");
-    if (!value) {
-      return fallbackItems;
-    }
-
-    const parsed = JSON.parse(value) as Array<{ id: string; name: string; price: number; quantity: number }>;
-    if (!Array.isArray(parsed) || parsed.length === 0) {
-      return fallbackItems;
-    }
-
-    return parsed.map((item) => ({
-      id: String(item.id),
-      name: item.name,
-      price: Number(item.price),
-      quantity: Number(item.quantity),
-    }));
-  } catch {
-    return fallbackItems;
-  }
-}
 
 export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("CARD");
@@ -61,11 +23,32 @@ export default function CheckoutPage() {
   const [promoDiscount, setPromoDiscount] = useState(0);
   const [promoMessage, setPromoMessage] = useState<string | null>(null);
   const [promoLoading, setPromoLoading] = useState(false);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
-  const orderItems = useMemo(() => getCartItems(), []);
-  const subtotal = useMemo(() => orderItems.reduce((sum, item) => sum + item.quantity * item.price, 0), [orderItems]);
+  useEffect(() => {
+    setCartItems(getCartItems());
+  }, []);
+
+  const subtotal = useMemo(() => cartItems.reduce((sum, item) => sum + item.quantity * item.price, 0), [cartItems]);
   const shipping = 750;
   const total = Math.max(0, subtotal - promoDiscount) + shipping;
+
+  const changeQuantity = (id: string, delta: number) => {
+    const target = cartItems.find((item) => item.id === id);
+    if (!target) {
+      return;
+    }
+
+    const minimum = Math.max(1, target.minOrder ?? 1);
+    const nextQuantity = Math.max(minimum, target.quantity + delta);
+    updateCartItemQuantity(id, nextQuantity);
+    setCartItems(getCartItems());
+  };
+
+  const handleRemoveItem = (id: string) => {
+    removeCartItem(id);
+    setCartItems(getCartItems());
+  };
 
   const handleApplyPromo = async () => {
     const code = promoCode.trim().toUpperCase();
@@ -80,7 +63,7 @@ export default function CheckoutPage() {
 
     const result = await validatePromoCodeInApi({
       code,
-      items: orderItems.map((item) => ({
+      items: cartItems.map((item) => ({
         productId: String(item.id),
         quantity: item.quantity,
       })),
@@ -99,6 +82,11 @@ export default function CheckoutPage() {
   };
 
   const handleCheckout = async () => {
+    if (cartItems.length === 0) {
+      setMessage("Your cart is empty. Add products first.");
+      return;
+    }
+
     if (!firstName || !lastName || !addressLine1 || !city || !phone) {
       setMessage("Please fill in required shipping details.");
       return;
@@ -116,14 +104,15 @@ export default function CheckoutPage() {
         city,
         paymentMethod,
         promoCode: promoDiscount > 0 ? promoCode.trim().toUpperCase() : undefined,
-        items: orderItems.map((item) => ({
+        items: cartItems.map((item) => ({
           productId: String(item.id),
           quantity: item.quantity,
         })),
       });
 
       setMessage(order?.orderNumber ? `Order created: ${order.orderNumber}` : "Order created successfully.");
-      window.localStorage.removeItem("eterna-cart");
+      clearCart();
+      setCartItems([]);
     } catch {
       setMessage("Could not create order. Please try again.");
     } finally {
@@ -147,8 +136,78 @@ export default function CheckoutPage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.35fr_1fr]">
           <section className="space-y-6 lg:col-span-2">
+            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm md:p-6">
+              <div className="mb-5 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <FiShoppingBag className="text-primary-600" />
+                  <h2 className="text-lg font-semibold text-gray-900">Your Cart</h2>
+                </div>
+                <span className="rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-primary-700">
+                  {cartItems.reduce((sum, item) => sum + item.quantity, 0)} items
+                </span>
+              </div>
+
+              {cartItems.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-8 text-center">
+                  <p className="text-base font-semibold text-gray-800">Your cart is empty</p>
+                  <p className="mt-1 text-sm text-gray-600">Add products to continue with checkout.</p>
+                  <Link
+                    href="/products"
+                    className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700"
+                  >
+                    Browse Products
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {cartItems.map((item) => (
+                    <article key={item.id} className="animate-rise rounded-xl border border-gray-200 bg-white p-3">
+                      <div className="flex items-start gap-3">
+                        <div className="relative h-16 w-16 overflow-hidden rounded-lg bg-gray-100">
+                          {item.image ? (
+                            <Image src={item.image} alt={item.name} fill sizes="64px" className="object-cover" />
+                          ) : null}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="line-clamp-2 text-sm font-semibold text-gray-900">{item.name}</p>
+                          <p className="mt-1 text-xs text-gray-500">KES {item.price.toLocaleString()} each</p>
+                          <div className="mt-2 flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => changeQuantity(item.id, -1)}
+                              className="rounded-md border border-gray-300 p-1.5 text-gray-700 hover:text-primary-700"
+                              aria-label={`Decrease quantity for ${item.name}`}
+                            >
+                              <FiMinus />
+                            </button>
+                            <span className="min-w-[38px] text-center text-sm font-semibold text-gray-900">{item.quantity}</span>
+                            <button
+                              type="button"
+                              onClick={() => changeQuantity(item.id, 1)}
+                              className="rounded-md border border-gray-300 p-1.5 text-gray-700 hover:text-primary-700"
+                              aria-label={`Increase quantity for ${item.name}`}
+                            >
+                              <FiPlus />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveItem(item.id)}
+                              className="ml-2 inline-flex items-center gap-1 rounded-md border border-rose-200 px-2 py-1 text-xs font-semibold text-rose-700 hover:bg-rose-50"
+                            >
+                              <FiTrash2 /> Remove
+                            </button>
+                          </div>
+                        </div>
+                        <p className="text-sm font-bold text-gray-900">KES {(item.quantity * item.price).toLocaleString()}</p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm md:p-6">
               <div className="mb-5 flex items-center gap-2">
                 <FiMapPin className="text-primary-600" />
@@ -204,7 +263,7 @@ export default function CheckoutPage() {
             </div>
           </section>
 
-          <aside className="lg:col-span-1">
+          <aside>
             <div className="sticky top-28 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm md:p-6">
               <div className="mb-4 flex items-center gap-2">
                 <FiTruck className="text-primary-600" />
@@ -212,12 +271,13 @@ export default function CheckoutPage() {
               </div>
 
               <div className="space-y-3 border-b border-gray-200 pb-4">
-                {orderItems.map((item) => (
+                {cartItems.map((item) => (
                   <div key={item.id} className="flex items-start justify-between gap-3 text-sm">
                     <p className="text-gray-700">{item.name}<span className="ml-1 text-gray-500">x{item.quantity}</span></p>
                     <p className="font-semibold text-gray-900">KES {(item.quantity * item.price).toLocaleString()}</p>
                   </div>
                 ))}
+                {cartItems.length === 0 ? <p className="text-sm text-gray-500">No items in cart.</p> : null}
               </div>
 
               <div className="space-y-2 py-4 text-sm">
@@ -234,12 +294,13 @@ export default function CheckoutPage() {
                     value={promoCode}
                     onChange={(event) => setPromoCode(event.target.value)}
                     placeholder="e.g. KENYA10"
+                    disabled={cartItems.length === 0}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
                   />
                   <button
                     type="button"
                     onClick={handleApplyPromo}
-                    disabled={promoLoading}
+                    disabled={promoLoading || cartItems.length === 0}
                     className="rounded-md border border-gray-300 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-70"
                   >
                     {promoLoading ? "Checking..." : "Apply"}
@@ -248,7 +309,7 @@ export default function CheckoutPage() {
                 {promoMessage ? <p className="mt-2 text-xs text-gray-600">{promoMessage}</p> : null}
               </div>
 
-              <button onClick={handleCheckout} disabled={submitting} className="w-full rounded-lg bg-primary-600 py-3 font-semibold text-white transition hover:bg-primary-700 disabled:opacity-70">
+              <button onClick={handleCheckout} disabled={submitting || cartItems.length === 0} className="w-full rounded-lg bg-primary-600 py-3 font-semibold text-white transition hover:bg-primary-700 disabled:opacity-70">
                 {submitting ? "Submitting..." : "Complete Checkout"}
               </button>
 

@@ -94,16 +94,6 @@ export default async function ProductDetailsPage({ params }: ProductPageProps) {
               price={currentProduct.bulkPrice}
               minOrder={currentProduct.minOrder}
             />
-
-            <div className="mt-4 flex flex-wrap gap-3">
-              <Link
-                href="/quote"
-                className="inline-flex items-center rounded-xl border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-700 transition hover:border-primary-300 hover:text-primary-700"
-              >
-                Need custom pricing? Request Quote
-              </Link>
-            </div>
-
             <ul className="mt-6 space-y-2 text-sm text-gray-600">
               <li className="flex items-center gap-2">
                 <FiCheckCircle className="text-primary-700" /> Wholesale-grade quality checks

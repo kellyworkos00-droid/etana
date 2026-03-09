@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { FiCheckCircle, FiMinus, FiPlus, FiShoppingCart } from "react-icons/fi";
+import { addItemToCart } from "@/lib/cart";
 
 type ProductPurchasePanelProps = {
   id: string;
@@ -11,17 +12,6 @@ type ProductPurchasePanelProps = {
   price: number;
   minOrder: number;
 };
-
-type CartItem = {
-  id: string;
-  name: string;
-  image: string;
-  price: number;
-  quantity: number;
-  minOrder: number;
-};
-
-const CART_STORAGE_KEY = "eterna-cart";
 
 export default function ProductPurchasePanel({ id, name, image, price, minOrder }: ProductPurchasePanelProps) {
   const [quantity, setQuantity] = useState(minOrder);
@@ -39,17 +29,7 @@ export default function ProductPurchasePanel({ id, name, image, price, minOrder 
 
   const addToCart = () => {
     try {
-      const stored = window.localStorage.getItem(CART_STORAGE_KEY);
-      const existing: CartItem[] = stored ? (JSON.parse(stored) as CartItem[]) : [];
-
-      const currentIndex = existing.findIndex((item) => item.id === id);
-      if (currentIndex >= 0) {
-        existing[currentIndex].quantity += quantity;
-      } else {
-        existing.push({ id, name, image, price, quantity, minOrder });
-      }
-
-      window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(existing));
+      addItemToCart({ id, name, image, price, quantity, minOrder });
       setAdded(true);
       window.setTimeout(() => setAdded(false), 1800);
     } catch {
@@ -96,9 +76,11 @@ export default function ProductPurchasePanel({ id, name, image, price, minOrder 
         <button
           type="button"
           onClick={addToCart}
-          className="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-700"
+          className={`inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-white transition ${
+            added ? "bg-emerald-600 animate-cart-bump" : "bg-primary-600 hover:bg-primary-700"
+          }`}
         >
-          <FiShoppingCart /> Add to Cart
+          {added ? <FiCheckCircle /> : <FiShoppingCart />} {added ? "Added" : "Add to Cart"}
         </button>
 
         <Link
