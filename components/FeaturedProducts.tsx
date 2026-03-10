@@ -8,9 +8,6 @@ import {
   FiArrowRight,
   FiPackage,
   FiTrendingUp,
-  FiFilter,
-  FiChevronLeft,
-  FiChevronRight,
   FiAward,
   FiCheckCircle,
   FiAlertCircle,
@@ -19,13 +16,10 @@ import type { Product } from "@/lib/products";
 import { fetchProductsFromApi, LIVE_REFRESH_INTERVAL_MS } from "@/lib/store-api";
 import { addItemToCart } from "@/lib/cart";
 
-type FilterKey = "all" | "food" | "home" | "health";
-
 export default function FeaturedProducts() {
   const [catalog, setCatalog] = useState<Product[]>([]);
-  const [activeTab, setActiveTab] = useState<FilterKey>("all");
   const [addedProductId, setAddedProductId] = useState<string | null>(null);
-  const carouselRef = useRef<HTMLDivElement | null>(null);
+  const gridRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -55,34 +49,13 @@ export default function FeaturedProducts() {
     };
   }, []);
 
-  const filters: { key: FilterKey; label: string; helper: string }[] = [
-    { key: "all", label: "All Products", helper: "Full catalog" },
-    { key: "food", label: "Groceries", helper: "Best sellers" },
-    { key: "home", label: "Home & Living", helper: "Business essentials" },
-    { key: "health", label: "Health & Beauty", helper: "Hygiene must-haves" },
-  ];
-
-  const filteredProducts = useMemo(() => {
-    if (activeTab === "all") {
-      return catalog;
-    }
-
-    const categoryByFilter: Record<Exclude<FilterKey, "all">, Product["category"]> = {
-      food: "Groceries",
-      home: "Home & Living",
-      health: "Health & Beauty",
-    };
-
-    return catalog.filter((product) => product.category === categoryByFilter[activeTab]);
-  }, [activeTab, catalog]);
-
   const totalSavings = useMemo(
     () =>
-      filteredProducts.reduce((accumulator, product) => {
+      catalog.reduce((accumulator, product) => {
         const savePerUnit = product.price - product.bulkPrice;
         return accumulator + savePerUnit * product.minOrder;
       }, 0),
-    [filteredProducts]
+    [catalog]
   );
 
   const bestSellerIds = useMemo(() => {
@@ -91,18 +64,6 @@ export default function FeaturedProducts() {
       .slice(0, 3)
       .map((product) => product.id);
   }, [catalog]);
-
-  const scrollProducts = (direction: "left" | "right") => {
-    if (!carouselRef.current) {
-      return;
-    }
-
-    const scrollAmount = Math.round(carouselRef.current.clientWidth * 0.82);
-    carouselRef.current.scrollBy({
-      left: direction === "right" ? scrollAmount : -scrollAmount,
-      behavior: "smooth",
-    });
-  };
 
   const handleAddToCart = (product: Product) => {
     addItemToCart({
@@ -133,48 +94,17 @@ export default function FeaturedProducts() {
           </span>
 
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Featured Products
+            All Products On Main Page
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto mb-8 leading-relaxed">
-            Bulk-ready products chosen by high-volume buyers. Pricing reflects wholesale rates,
-            built for faster margins.
+            Every available product is shown here so buyers can browse the full catalog immediately.
           </p>
-
-          <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-gray-600 shadow-sm">
-            <FiFilter className="text-primary-600" />
-            Filter catalog
-          </div>
-        </div>
-
-        <div className="mb-8 flex flex-wrap items-center justify-center gap-3">
-          {filters.map((filter) => (
-            <button
-              key={filter.key}
-              onClick={() => setActiveTab(filter.key)}
-              aria-pressed={activeTab === filter.key}
-              className={`rounded-full border px-5 py-2.5 text-sm font-semibold transition-all duration-300 ${
-                activeTab === filter.key
-                  ? "border-primary-600 bg-primary-600 text-white shadow-md"
-                  : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:-translate-y-0.5"
-              }`}
-            >
-              {filter.label}
-              <span
-                className={`ml-2 text-xs ${
-                  activeTab === filter.key ? "text-primary-100" : "text-gray-500"
-                }`}
-              >
-                {filter.helper}
-              </span>
-            </button>
-          ))}
         </div>
 
         <div className="mb-8 rounded-2xl border border-gray-200 bg-white/90 px-5 py-4 backdrop-blur-sm shadow-sm">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-gray-600">
-              Showing <span className="font-semibold text-gray-900">{filteredProducts.length}</span>{" "}
-              products in <span className="font-semibold text-primary-700">{filters.find((f) => f.key === activeTab)?.label}</span>
+              Showing <span className="font-semibold text-gray-900">{catalog.length}</span> products from the live admin catalog.
             </p>
             <p className="inline-flex items-center gap-2 rounded-full bg-rose-50 px-3 py-1 text-sm font-semibold text-primary-700 w-fit">
               <FiPackage />
@@ -183,34 +113,12 @@ export default function FeaturedProducts() {
           </div>
         </div>
 
-        <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">Best Seller Carousel</h3>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => scrollProducts("left")}
-              aria-label="Scroll products left"
-              className="rounded-full border border-gray-300 bg-white p-2 text-gray-700 transition hover:border-primary-400 hover:text-primary-700"
-            >
-              <FiChevronLeft />
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollProducts("right")}
-              aria-label="Scroll products right"
-              className="rounded-full border border-gray-300 bg-white p-2 text-gray-700 transition hover:border-primary-400 hover:text-primary-700"
-            >
-              <FiChevronRight />
-            </button>
-          </div>
-        </div>
-
         <div
-          ref={carouselRef}
-          className="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          ref={gridRef}
+          className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         >
-          {filteredProducts.length === 0 ? (
-            <div className="w-full rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-10 text-center">
+          {catalog.length === 0 ? (
+            <div className="col-span-full w-full rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-10 text-center">
               <p className="inline-flex items-center gap-2 text-sm font-semibold text-gray-700">
                 <FiAlertCircle className="text-primary-700" /> No products yet from admin panel
               </p>
@@ -218,10 +126,10 @@ export default function FeaturedProducts() {
             </div>
           ) : null}
 
-          {filteredProducts.map((product, index) => (
+          {catalog.map((product, index) => (
             <div
               key={product.id}
-              className="group min-w-[74%] snap-start overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl sm:min-w-[290px] xl:min-w-[270px] animate-rise"
+              className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl animate-rise"
               style={{ animationDelay: `${index * 70}ms` }}
             >
               <div className="relative h-52 overflow-hidden bg-gray-100">
