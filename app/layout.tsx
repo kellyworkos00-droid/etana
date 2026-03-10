@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, Playfair_Display } from "next/font/google";
+import dynamic from "next/dynamic";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import PWARegister from "@/components/PWARegister";
+
+const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: false });
+const PWARegister = dynamic(() => import("@/components/PWARegister"), { ssr: false });
 
 const manrope = Manrope({
   subsets: ["latin"],
