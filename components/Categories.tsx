@@ -98,14 +98,14 @@ export default function Categories() {
           </p>
         </div>
 
-        <div className="grid auto-rows-[180px] grid-cols-2 gap-3 sm:auto-rows-[190px] sm:grid-cols-3 lg:grid-cols-6">
+        <div className="grid auto-rows-[145px] grid-cols-2 gap-2.5 sm:auto-rows-[155px] sm:grid-cols-3 lg:grid-cols-6">
           {categories.map((category) => {
             const Icon = category.icon;
             return (
               <Link
                 key={category.id}
                 href={category.link}
-                className={`group relative overflow-hidden rounded-2xl border border-white/40 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${category.size}`}
+                className={`group relative overflow-hidden rounded-xl border border-white/40 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg ${category.size}`}
               >
                 <Image
                   src={category.image}
@@ -117,24 +117,24 @@ export default function Categories() {
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent transition-all duration-500 group-hover:from-black/80" />
 
-                <div className="absolute inset-0 flex flex-col justify-between p-3.5">
+                <div className="absolute inset-0 flex flex-col justify-between p-2.5">
                   <div className="flex items-start justify-between">
                     <div
-                      className={`${category.color} inline-flex h-9 w-9 items-center justify-center rounded-xl shadow-lg transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3`}
+                      className={`${category.color} inline-flex h-7 w-7 items-center justify-center rounded-lg shadow-md transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3`}
                     >
-                      <Icon className="text-base text-white" />
+                      <Icon className="text-sm text-white" />
                     </div>
-                    <span className="rounded-full bg-white/90 px-2.5 py-0.5 text-[11px] font-semibold text-gray-800">
+                    <span className="rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-gray-800">
                       {category.count} items
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="mb-1 text-base font-bold tracking-tight text-white text-balance sm:text-lg">
+                    <h3 className="mb-1 text-sm font-bold tracking-tight text-white text-balance sm:text-[15px]">
                       {category.name}
                     </h3>
 
-                    <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-0.5 text-xs font-semibold text-white backdrop-blur-sm transition group-hover:bg-primary-600">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur-sm transition group-hover:bg-primary-600">
                       Explore <FiArrowRight className="transition-transform group-hover:translate-x-1" />
                     </span>
                   </div>
