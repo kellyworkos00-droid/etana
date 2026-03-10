@@ -21,6 +21,7 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
+  const isLocalhost = self.location.hostname === "localhost" || self.location.hostname === "127.0.0.1";
 
   const isNextAsset =
     url.pathname.startsWith("/_next/") ||
@@ -29,6 +30,12 @@ self.addEventListener("fetch", (event) => {
     url.pathname.endsWith(".map");
 
   if (request.method !== "GET") {
+    return;
+  }
+
+  // Avoid offline-page interception loops during local development.
+  if (isLocalhost) {
+    event.respondWith(fetch(request));
     return;
   }
 

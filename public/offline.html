@@ -98,16 +98,73 @@
         var dots = document.getElementById("dots");
         var status = document.getElementById("status");
 
+        function setStatus(message) {
+          if (status) status.textContent = message;
+        }
+
+        function recoverApp() {
+          setStatus("Connection restored. Preparing app...");
+
+          var unregisterPromise = Promise.resolve();
+          if ("serviceWorker" in navigator) {
+            unregisterPromise = navigator.serviceWorker
+              .getRegistrations()
+              .then(function (registrations) {
+                return Promise.all(
+                  registrations.map(function (registration) {
+                    return registration.unregister();
+                  })
+                );
+              })
+              .catch(function () {
+                return [];
+              });
+          }
+
+          var cachePromise = Promise.resolve();
+          if ("caches" in window) {
+            cachePromise = caches
+              .keys()
+              .then(function (keys) {
+                return Promise.all(
+                  keys.map(function (key) {
+                    return caches.delete(key);
+                  })
+                );
+              })
+              .catch(function () {
+                return [];
+              });
+          }
+
+          Promise.all([unregisterPromise, cachePromise]).finally(function () {
+            setStatus("Reloading app...");
+            window.location.replace("/?reconnect=" + Date.now());
+          });
+        }
+
+        function pingApp() {
+          fetch("/?healthcheck=" + Date.now(), { cache: "no-store" })
+            .then(function (response) {
+              if (response && response.ok) {
+                recoverApp();
+              }
+            })
+            .catch(function () {
+              setStatus("Waiting for internet connection...");
+            });
+        }
+
         setInterval(function () {
           dotCount = (dotCount % 3) + 1;
           if (dots) dots.textContent = ".".repeat(dotCount);
         }, 450);
 
+        setInterval(pingApp, 2500);
+        setTimeout(pingApp, 300);
+
         window.addEventListener("online", function () {
-          if (status) status.textContent = "Connection restored. Reloading...";
-          setTimeout(function () {
-            window.location.reload();
-          }, 600);
+          recoverApp();
         });
       })();
     </script>
