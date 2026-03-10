@@ -1,4 +1,5 @@
 import HeroSlider from "@/components/HeroSlider";
+import FeaturedPromoGrid from "@/components/FeaturedPromoGrid";
 import ShowcaseSlider from "@/components/ShowcaseSlider";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import Categories from "@/components/Categories";
@@ -9,6 +10,7 @@ export default function Home() {
   return (
     <main className="min-h-screen pb-24 md:pb-0">
       <HeroSlider />
+      <FeaturedPromoGrid />
       <ShowcaseSlider />
       <Categories />
       <FeaturedProducts />
