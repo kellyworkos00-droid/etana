@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { FiArrowRight, FiFilter, FiSearch } from "react-icons/fi";
 import { products, type Product } from "@/lib/products";
@@ -11,7 +11,7 @@ import { fetchProductsFromApi, LIVE_REFRESH_INTERVAL_MS } from "@/lib/store-api"
 type CategoryFilter = "all" | Product["category"];
 type SortKey = "popular" | "price-low" | "price-high";
 
-export default function ProductsPage() {
+function ProductsPageContent() {
   const searchParams = useSearchParams();
   const [catalog, setCatalog] = useState<Product[]>(products);
   const [query, setQuery] = useState("");
@@ -185,5 +185,13 @@ export default function ProductsPage() {
         </section>
       </div>
     </main>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<main className="min-h-screen bg-white px-4 pb-24 pt-28 md:pb-10" />}>
+      <ProductsPageContent />
+    </Suspense>
   );
 }
