@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, EffectCoverflow, Pagination } from "swiper/modules";
-import { FiArrowRight, FiBox, FiTrendingUp } from "react-icons/fi";
+import { Autoplay, EffectCoverflow, Pagination, Navigation, Keyboard } from "swiper/modules";
+import { FiArrowRight, FiBox, FiChevronLeft, FiChevronRight, FiTrendingUp } from "react-icons/fi";
 import { fetchProductsFromApi, fetchSliderOffersFromApi, LIVE_REFRESH_INTERVAL_MS } from "@/lib/store-api";
 import type { Product } from "@/lib/products";
 
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 type ShowcaseItem = {
   id: number;
@@ -123,14 +124,20 @@ export default function ShowcaseSlider() {
         </div>
 
         <Swiper
-          modules={[Autoplay, EffectCoverflow, Pagination]}
+          modules={[Autoplay, EffectCoverflow, Pagination, Navigation, Keyboard]}
           className="showcase-swiper"
           effect="coverflow"
           centeredSlides
           loop
           grabCursor
+          keyboard={{ enabled: true }}
+          speed={700}
           slidesPerView={1.08}
           spaceBetween={16}
+          navigation={{
+            prevEl: ".showcase-slider-prev",
+            nextEl: ".showcase-slider-next",
+          }}
           coverflowEffect={{
             rotate: 0,
             stretch: 0,
@@ -138,7 +145,7 @@ export default function ShowcaseSlider() {
             modifier: 1,
             slideShadows: false,
           }}
-          autoplay={{ delay: 3000, disableOnInteraction: false }}
+          autoplay={{ delay: 3200, disableOnInteraction: false, pauseOnMouseEnter: true }}
           pagination={{ clickable: true }}
           breakpoints={{
             640: { slidesPerView: 1.35, spaceBetween: 18 },
@@ -184,6 +191,23 @@ export default function ShowcaseSlider() {
             </SwiperSlide>
           ))}
         </Swiper>
+
+        <div className="mt-5 flex items-center justify-center gap-2">
+          <button
+            type="button"
+            className="showcase-slider-prev slider-nav"
+            aria-label="Previous showcase slide"
+          >
+            <FiChevronLeft />
+          </button>
+          <button
+            type="button"
+            className="showcase-slider-next slider-nav"
+            aria-label="Next showcase slide"
+          >
+            <FiChevronRight />
+          </button>
+        </div>
       </div>
     </section>
   );

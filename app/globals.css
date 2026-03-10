@@ -122,3 +122,32 @@ body {
   opacity: 1;
   background: #dc2626;
 }
+
+.slider-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 999px;
+  border: 1px solid #fecdd3;
+  background: rgba(255, 255, 255, 0.92);
+  color: #be123c;
+  font-size: 1.05rem;
+  transition: all 0.25s ease;
+  box-shadow: 0 10px 26px rgba(244, 63, 94, 0.2);
+}
+
+.slider-nav:hover {
+  background: #e11d48;
+  border-color: #e11d48;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.slider-nav.swiper-button-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}

@@ -1,15 +1,16 @@
 "use client";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination, EffectFade } from "swiper/modules";
+import { Autoplay, Pagination, EffectFade, Navigation, Keyboard } from "swiper/modules";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { FiArrowRight, FiCheckCircle, FiClock, FiShield, FiTruck } from "react-icons/fi";
+import { FiArrowRight, FiCheckCircle, FiChevronLeft, FiChevronRight, FiClock, FiShield, FiTruck } from "react-icons/fi";
 import { fetchHomeSlidesFromApi, LIVE_REFRESH_INTERVAL_MS } from "@/lib/store-api";
 
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
+import "swiper/css/navigation";
 
 const slides = [
   {
@@ -102,11 +103,18 @@ export default function HeroSlider() {
       </div>
 
       <Swiper
-        modules={[Autoplay, Pagination, EffectFade]}
+        modules={[Autoplay, Pagination, EffectFade, Navigation, Keyboard]}
         effect="fade"
         autoplay={{
           delay: 5000,
           disableOnInteraction: false,
+          pauseOnMouseEnter: true,
+        }}
+        speed={800}
+        keyboard={{ enabled: true }}
+        navigation={{
+          prevEl: ".hero-slider-prev",
+          nextEl: ".hero-slider-next",
         }}
         pagination={{
           clickable: true,
@@ -200,6 +208,25 @@ export default function HeroSlider() {
           </SwiperSlide>
         ))}
       </Swiper>
+
+      <div className="pointer-events-none absolute inset-x-0 top-1/2 z-20 hidden -translate-y-1/2 px-3 sm:flex sm:px-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between">
+          <button
+            type="button"
+            className="hero-slider-prev slider-nav pointer-events-auto"
+            aria-label="Previous hero slide"
+          >
+            <FiChevronLeft />
+          </button>
+          <button
+            type="button"
+            className="hero-slider-next slider-nav pointer-events-auto"
+            aria-label="Next hero slide"
+          >
+            <FiChevronRight />
+          </button>
+        </div>
+      </div>
     </section>
   );
 }
