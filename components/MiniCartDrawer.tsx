@@ -54,7 +54,7 @@ export default function MiniCartDrawer({ open, onClose }: MiniCartDrawerProps) {
   const changeQuantity = (item: CartItem, delta: number) => {
     const minQty = Math.max(1, item.minOrder ?? 1);
     const nextQty = Math.max(minQty, item.quantity + delta);
-    updateCartItemQuantity(item.id, nextQty);
+    updateCartItemQuantity(item.cartKey || item.id, nextQty);
     setItems(getCartItems());
   };
 
@@ -116,13 +116,14 @@ export default function MiniCartDrawer({ open, onClose }: MiniCartDrawerProps) {
           ) : (
             <div className="space-y-3">
               {items.map((item) => (
-                <article key={item.id} className="rounded-xl border border-gray-200 p-3">
+                <article key={item.cartKey || item.id} className="rounded-xl border border-gray-200 p-3">
                   <div className="flex items-start gap-3">
                     <div className="relative h-14 w-14 overflow-hidden rounded-lg bg-gray-100">
                       {item.image ? <Image src={item.image} alt={item.name} fill sizes="56px" className="object-cover" /> : null}
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="line-clamp-2 text-sm font-semibold text-gray-900">{item.name}</p>
+                      {item.selectedSize ? <p className="mt-1 text-xs font-medium text-gray-500">Size: {item.selectedSize}</p> : null}
                       <p className="mt-1 text-xs text-gray-500">KES {item.price.toLocaleString()} each</p>
 
                       <div className="mt-2 flex items-center gap-2">
@@ -150,7 +151,7 @@ export default function MiniCartDrawer({ open, onClose }: MiniCartDrawerProps) {
                       <p className="text-sm font-bold text-gray-900">KES {(item.price * item.quantity).toLocaleString()}</p>
                       <button
                         type="button"
-                        onClick={() => deleteItem(item.id)}
+                        onClick={() => deleteItem(item.cartKey || item.id)}
                         className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-rose-700 hover:text-rose-800"
                       >
                         <FiTrash2 /> Remove

@@ -9,6 +9,7 @@ export type Product = {
   minOrder: number;
   image: string;
   discount: number;
+  sizes?: string[];
 };
 
 export const products: Product[] = [

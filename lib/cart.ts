@@ -1,10 +1,12 @@
 export type CartItem = {
+  cartKey?: string;
   id: string;
   name: string;
   image?: string;
   price: number;
   quantity: number;
   minOrder?: number;
+  selectedSize?: string;
 };
 
 export const CART_STORAGE_KEY = "eterna-cart";
@@ -40,12 +42,14 @@ export function getCartItems(): CartItem[] {
       .map((item) => {
         const value = item as Partial<CartItem>;
         return {
+          cartKey: value.cartKey ? String(value.cartKey) : undefined,
           id: String(value.id ?? ""),
           name: String(value.name ?? ""),
           image: value.image ? String(value.image) : undefined,
           price: Number(value.price ?? 0),
           quantity: Number(value.quantity ?? 0),
           minOrder: value.minOrder !== undefined ? Number(value.minOrder) : undefined,
+          selectedSize: value.selectedSize ? String(value.selectedSize) : undefined,
         };
       })
       .filter((item) => item.id && item.name && Number.isFinite(item.price) && item.price >= 0 && Number.isFinite(item.quantity) && item.quantity > 0);
@@ -65,7 +69,8 @@ export function saveCartItems(items: CartItem[]) {
 
 export function addItemToCart(item: CartItem) {
   const current = getCartItems();
-  const existingIndex = current.findIndex((entry) => entry.id === item.id);
+  const resolvedCartKey = item.cartKey || (item.selectedSize ? `${item.id}::${item.selectedSize.toLowerCase()}` : item.id);
+  const existingIndex = current.findIndex((entry) => (entry.cartKey || entry.id) === resolvedCartKey);
 
   if (existingIndex >= 0) {
     current[existingIndex].quantity += item.quantity;
@@ -75,25 +80,29 @@ export function addItemToCart(item: CartItem) {
     if (item.minOrder !== undefined) {
       current[existingIndex].minOrder = item.minOrder;
     }
+    if (item.selectedSize) {
+      current[existingIndex].selectedSize = item.selectedSize;
+    }
+    current[existingIndex].cartKey = resolvedCartKey;
   } else {
-    current.push(item);
+    current.push({ ...item, cartKey: resolvedCartKey });
   }
 
   saveCartItems(current);
 }
 
-export function updateCartItemQuantity(id: string, quantity: number) {
+export function updateCartItemQuantity(idOrCartKey: string, quantity: number) {
   const current = getCartItems();
   const next = current
-    .map((item) => (item.id === id ? { ...item, quantity } : item))
+    .map((item) => ((item.cartKey || item.id) === idOrCartKey ? { ...item, quantity } : item))
     .filter((item) => item.quantity > 0);
 
   saveCartItems(next);
 }
 
-export function removeCartItem(id: string) {
+export function removeCartItem(idOrCartKey: string) {
   const current = getCartItems();
-  const next = current.filter((item) => item.id !== id);
+  const next = current.filter((item) => (item.cartKey || item.id) !== idOrCartKey);
   saveCartItems(next);
 }
 

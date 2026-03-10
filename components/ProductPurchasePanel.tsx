@@ -11,11 +11,13 @@ type ProductPurchasePanelProps = {
   image: string;
   price: number;
   minOrder: number;
+  sizes?: string[];
 };
 
-export default function ProductPurchasePanel({ id, name, image, price, minOrder }: ProductPurchasePanelProps) {
+export default function ProductPurchasePanel({ id, name, image, price, minOrder, sizes = [] }: ProductPurchasePanelProps) {
   const [quantity, setQuantity] = useState(minOrder);
   const [added, setAdded] = useState(false);
+  const [selectedSize, setSelectedSize] = useState<string>(sizes[0] ?? "");
 
   const orderValue = useMemo(() => quantity * price, [quantity, price]);
 
@@ -29,7 +31,17 @@ export default function ProductPurchasePanel({ id, name, image, price, minOrder 
 
   const addToCart = () => {
     try {
-      addItemToCart({ id, name, image, price, quantity, minOrder });
+      const normalizedSize = selectedSize.trim();
+      addItemToCart({
+        id,
+        name,
+        image,
+        price,
+        quantity,
+        minOrder,
+        selectedSize: normalizedSize || undefined,
+        cartKey: normalizedSize ? `${id}::${normalizedSize.toLowerCase()}` : id,
+      });
       setAdded(true);
       window.setTimeout(() => setAdded(false), 1800);
     } catch {
@@ -71,6 +83,31 @@ export default function ProductPurchasePanel({ id, name, image, price, minOrder 
       <div className="mt-4 rounded-xl bg-rose-50/50 px-3 py-2 text-sm text-gray-700">
         Estimated order value: <span className="font-semibold text-primary-700">KES {orderValue.toLocaleString()}</span>
       </div>
+
+      {sizes.length > 0 ? (
+        <div className="mt-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Select size</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {sizes.map((size) => {
+              const isActive = selectedSize === size;
+              return (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => setSelectedSize(size)}
+                  className={`rounded-lg border px-3 py-1.5 text-sm font-semibold transition ${
+                    isActive
+                      ? "border-primary-600 bg-primary-600 text-white"
+                      : "border-gray-300 bg-white text-gray-700 hover:border-primary-300 hover:text-primary-700"
+                  }`}
+                >
+                  {size}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
 
       <div className="mt-4 flex flex-wrap gap-3">
         <button

@@ -12,6 +12,7 @@ type AdminProduct = {
   bulkPrice: number;
   minOrder: number;
   discountPct: number;
+  sizes?: string[];
 };
 
 type SliderProduct = {
@@ -77,6 +78,7 @@ function normalizeProduct(item: AdminProduct): Product {
     minOrder: Number(item.minOrder),
     image: item.imageUrl,
     discount: Number(item.discountPct ?? 0),
+    sizes: Array.isArray(item.sizes) ? item.sizes.map((size) => String(size).trim()).filter(Boolean) : [],
   };
 }
 

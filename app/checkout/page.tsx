@@ -34,7 +34,7 @@ export default function CheckoutPage() {
   const total = Math.max(0, subtotal - promoDiscount) + shipping;
 
   const changeQuantity = (id: string, delta: number) => {
-    const target = cartItems.find((item) => item.id === id);
+    const target = cartItems.find((item) => (item.cartKey || item.id) === id);
     if (!target) {
       return;
     }
@@ -163,7 +163,7 @@ export default function CheckoutPage() {
               ) : (
                 <div className="space-y-3">
                   {cartItems.map((item) => (
-                    <article key={item.id} className="animate-rise rounded-xl border border-gray-200 bg-white p-3">
+                    <article key={item.cartKey || item.id} className="animate-rise rounded-xl border border-gray-200 bg-white p-3">
                       <div className="flex items-start gap-3">
                         <div className="relative h-16 w-16 overflow-hidden rounded-lg bg-gray-100">
                           {item.image ? (
@@ -172,11 +172,12 @@ export default function CheckoutPage() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="line-clamp-2 text-sm font-semibold text-gray-900">{item.name}</p>
+                          {item.selectedSize ? <p className="mt-1 text-xs font-medium text-gray-500">Size: {item.selectedSize}</p> : null}
                           <p className="mt-1 text-xs text-gray-500">KES {item.price.toLocaleString()} each</p>
                           <div className="mt-2 flex items-center gap-2">
                             <button
                               type="button"
-                              onClick={() => changeQuantity(item.id, -1)}
+                              onClick={() => changeQuantity(item.cartKey || item.id, -1)}
                               className="rounded-md border border-gray-300 p-1.5 text-gray-700 hover:text-primary-700"
                               aria-label={`Decrease quantity for ${item.name}`}
                             >
@@ -185,7 +186,7 @@ export default function CheckoutPage() {
                             <span className="min-w-[38px] text-center text-sm font-semibold text-gray-900">{item.quantity}</span>
                             <button
                               type="button"
-                              onClick={() => changeQuantity(item.id, 1)}
+                              onClick={() => changeQuantity(item.cartKey || item.id, 1)}
                               className="rounded-md border border-gray-300 p-1.5 text-gray-700 hover:text-primary-700"
                               aria-label={`Increase quantity for ${item.name}`}
                             >
@@ -193,7 +194,7 @@ export default function CheckoutPage() {
                             </button>
                             <button
                               type="button"
-                              onClick={() => handleRemoveItem(item.id)}
+                              onClick={() => handleRemoveItem(item.cartKey || item.id)}
                               className="ml-2 inline-flex items-center gap-1 rounded-md border border-rose-200 px-2 py-1 text-xs font-semibold text-rose-700 hover:bg-rose-50"
                             >
                               <FiTrash2 /> Remove
@@ -272,8 +273,12 @@ export default function CheckoutPage() {
 
               <div className="space-y-3 border-b border-gray-200 pb-4">
                 {cartItems.map((item) => (
-                  <div key={item.id} className="flex items-start justify-between gap-3 text-sm">
-                    <p className="text-gray-700">{item.name}<span className="ml-1 text-gray-500">x{item.quantity}</span></p>
+                  <div key={item.cartKey || item.id} className="flex items-start justify-between gap-3 text-sm">
+                    <p className="text-gray-700">
+                      {item.name}
+                      {item.selectedSize ? <span className="ml-1 text-gray-500">({item.selectedSize})</span> : null}
+                      <span className="ml-1 text-gray-500">x{item.quantity}</span>
+                    </p>
                     <p className="font-semibold text-gray-900">KES {(item.quantity * item.price).toLocaleString()}</p>
                   </div>
                 ))}
