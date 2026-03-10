@@ -15,13 +15,13 @@ import "swiper/css/navigation";
 const slides = [
   {
     id: 1,
-    title: "Wholesale Ordering, Reimagined",
-    subtitle: "Built for Fast-Moving Businesses",
-    description: "Source trusted products at scale with predictable pricing, quick support, and reliable nationwide delivery.",
-    cta: "Browse Products",
-    badge: "Popular with retailers",
-    stats: ["500+ active business buyers", "24-48 hr dispatch", "KES 50,000 free-delivery threshold"],
-    image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1920&q=80",
+    title: "Shop Everything You Need",
+    subtitle: "Your Trusted Online Store",
+    description: "Discover thousands of quality products with fast delivery nationwide. Find exactly what you're looking for with our easy-to-use platform.",
+    cta: "Start Shopping",
+    badge: "Shop now",
+    stats: ["50,000+ active shoppers", "Same-day in Nairobi", "100% Quality Guaranteed"],
+    image: "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=1920&q=80",
     link: "/products",
   },
   {
