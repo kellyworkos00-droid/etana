@@ -61,6 +61,11 @@ type ManagedSlide = {
 
 export default function HeroSlider() {
   const [managedSlides, setManagedSlides] = useState<ManagedSlide[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -84,6 +89,10 @@ export default function HeroSlider() {
   const activeSlides = useMemo(() => {
     return managedSlides.length > 0 ? managedSlides : slides;
   }, [managedSlides]);
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <section className="relative overflow-hidden border-b border-rose-100 bg-white pt-24 md:pt-28">

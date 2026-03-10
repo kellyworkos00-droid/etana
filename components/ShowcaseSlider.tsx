@@ -38,6 +38,11 @@ function toOfferSlides(items: Product[]): ShowcaseItem[] {
 
 export default function ShowcaseSlider() {
   const [offerSlides, setOfferSlides] = useState<ShowcaseItem[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -84,7 +89,7 @@ export default function ShowcaseSlider() {
     return offerSlides;
   }, [offerSlides]);
 
-  if (slides.length === 0) {
+  if (!isMounted || slides.length === 0) {
     return null;
   }
 
