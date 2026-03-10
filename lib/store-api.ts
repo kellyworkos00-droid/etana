@@ -1,4 +1,4 @@
-import { products as fallbackProducts, type Product } from "@/lib/products";
+import type { Product } from "@/lib/products";
 
 export const LIVE_REFRESH_INTERVAL_MS = 8000;
 
@@ -99,18 +99,18 @@ export async function fetchProductsFromApi(): Promise<Product[]> {
   try {
     const response = await fetch(`${getApiBaseUrl()}/products`, { cache: "no-store" });
     if (!response.ok) {
-      return fallbackProducts;
+      return [];
     }
 
     const payload = (await response.json()) as unknown;
     const data = extractData<AdminProduct[]>(payload);
     if (!data || !Array.isArray(data)) {
-      return fallbackProducts;
+      return [];
     }
 
     return data.map(normalizeProduct);
   } catch {
-    return fallbackProducts;
+    return [];
   }
 }
 
@@ -118,18 +118,18 @@ export async function fetchProductByIdOrSlugFromApi(idOrSlug: string): Promise<P
   try {
     const response = await fetch(`${getApiBaseUrl()}/products/${idOrSlug}`, { cache: "no-store" });
     if (!response.ok) {
-      return fallbackProducts.find((product) => product.id === idOrSlug);
+      return undefined;
     }
 
     const payload = (await response.json()) as unknown;
     const data = extractData<AdminProduct>(payload);
     if (!data) {
-      return fallbackProducts.find((product) => product.id === idOrSlug);
+      return undefined;
     }
 
     return normalizeProduct(data);
   } catch {
-    return fallbackProducts.find((product) => product.id === idOrSlug);
+    return undefined;
   }
 }
 

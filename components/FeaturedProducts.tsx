@@ -13,15 +13,16 @@ import {
   FiChevronRight,
   FiAward,
   FiCheckCircle,
+  FiAlertCircle,
 } from "react-icons/fi";
-import { products, type Product } from "@/lib/products";
+import type { Product } from "@/lib/products";
 import { fetchProductsFromApi, LIVE_REFRESH_INTERVAL_MS } from "@/lib/store-api";
 import { addItemToCart } from "@/lib/cart";
 
 type FilterKey = "all" | "food" | "home" | "health";
 
 export default function FeaturedProducts() {
-  const [catalog, setCatalog] = useState<Product[]>(products);
+  const [catalog, setCatalog] = useState<Product[]>([]);
   const [activeTab, setActiveTab] = useState<FilterKey>("all");
   const [addedProductId, setAddedProductId] = useState<string | null>(null);
   const carouselRef = useRef<HTMLDivElement | null>(null);
@@ -208,6 +209,15 @@ export default function FeaturedProducts() {
           ref={carouselRef}
           className="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
+          {filteredProducts.length === 0 ? (
+            <div className="w-full rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-10 text-center">
+              <p className="inline-flex items-center gap-2 text-sm font-semibold text-gray-700">
+                <FiAlertCircle className="text-primary-700" /> No products yet from admin panel
+              </p>
+              <p className="mt-2 text-sm text-gray-600">Add products in admin and they will appear here automatically.</p>
+            </div>
+          ) : null}
+
           {filteredProducts.map((product, index) => (
             <div
               key={product.id}

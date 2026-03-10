@@ -36,53 +36,6 @@ function toOfferSlides(items: Product[]): ShowcaseItem[] {
   }));
 }
 
-const showcaseItems: ShowcaseItem[] = [
-  {
-    id: 1,
-    title: "Retail Power Packs",
-    caption: "High-rotation essentials for stores",
-    metric: "Top Seller",
-    detail: "Move fast with shelf-ready bundles curated for daily demand.",
-    image:
-      "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1400&q=80",
-    href: "/products",
-    cta: "Shop Packs",
-  },
-  {
-    id: 2,
-    title: "Hospitality Supply Lane",
-    caption: "Procurement flow for hotels and kitchens",
-    metric: "48H Dispatch",
-    detail: "Plan stable replenishment with dependable lead times across Kenya.",
-    image:
-      "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=1400&q=80",
-    href: "/checkout",
-    cta: "Open Cart",
-  },
-  {
-    id: 3,
-    title: "Beauty and Personal Care",
-    caption: "Reliable quality in every carton",
-    metric: "Verified Quality",
-    detail: "Trusted category picks for teams, clinics, and business facilities.",
-    image:
-      "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=1400&q=80",
-    href: "/categories",
-    cta: "Explore Category",
-  },
-  {
-    id: 4,
-    title: "Workspace Essentials",
-    caption: "Stock smarter for office operations",
-    metric: "Bulk Advantage",
-    detail: "Reduce spend with volume-friendly packs and consistent fulfillment.",
-    image:
-      "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1400&q=80",
-    href: "/products",
-    cta: "View Essentials",
-  },
-];
-
 export default function ShowcaseSlider() {
   const [offerSlides, setOfferSlides] = useState<ShowcaseItem[]>([]);
 
@@ -128,8 +81,12 @@ export default function ShowcaseSlider() {
   }, []);
 
   const slides = useMemo(() => {
-    return offerSlides.length > 0 ? offerSlides : showcaseItems;
+    return offerSlides;
   }, [offerSlides]);
+
+  if (slides.length === 0) {
+    return null;
+  }
 
   return (
     <section className="relative overflow-hidden py-16 sm:py-20">
