@@ -115,7 +115,7 @@ export default function FeaturedProducts() {
 
         <div
           ref={gridRef}
-          className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+          className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4"
         >
           {catalog.length === 0 ? (
             <div className="col-span-full w-full rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-10 text-center">
@@ -129,10 +129,10 @@ export default function FeaturedProducts() {
           {catalog.map((product, index) => (
             <div
               key={product.id}
-              className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl animate-rise"
+              className="group overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg animate-rise"
               style={{ animationDelay: `${index * 70}ms` }}
             >
-              <div className="relative h-52 overflow-hidden bg-gray-100">
+              <div className="relative h-32 overflow-hidden bg-gray-100 sm:h-44">
                 <Image
                   src={product.image}
                   alt={product.name}
@@ -141,13 +141,13 @@ export default function FeaturedProducts() {
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 {product.discount > 0 && (
-                  <div className="absolute left-3 top-3 rounded-full bg-rose-500 px-3 py-1 text-sm font-bold text-white shadow-md">
+                  <div className="absolute left-2 top-2 rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-bold text-white shadow-md sm:left-3 sm:top-3 sm:px-3 sm:py-1 sm:text-sm">
                     SAVE {product.discount}%
                   </div>
                 )}
 
                 {bestSellerIds.includes(product.id) && (
-                  <div className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-amber-300 px-3 py-1 text-xs font-bold text-amber-950 shadow-md">
+                  <div className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-amber-300 px-2 py-0.5 text-[10px] font-bold text-amber-950 shadow-md sm:right-3 sm:top-3 sm:px-3 sm:py-1 sm:text-xs">
                     <FiAward /> Best Seller
                   </div>
                 )}
@@ -171,27 +171,27 @@ export default function FeaturedProducts() {
                 </div>
               </div>
 
-              <div className="p-4">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+              <div className="p-2.5 sm:p-4">
+                <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-500 sm:mb-2 sm:text-xs">
                   {product.category}
                 </p>
-                <h3 className="mb-2 line-clamp-2 text-base font-semibold text-gray-900">
+                <h3 className="mb-1.5 line-clamp-2 text-sm font-semibold text-gray-900 sm:mb-2 sm:text-base">
                   {product.name}
                 </h3>
 
-                <div className="mb-3 rounded-xl bg-gray-50 p-2.5">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-xl font-bold text-primary-700">
+                <div className="mb-2 rounded-lg bg-gray-50 p-2 sm:mb-3 sm:rounded-xl sm:p-2.5">
+                  <div className="flex items-baseline gap-1.5 sm:gap-2">
+                    <span className="text-sm font-bold text-primary-700 sm:text-xl">
                       KES {product.bulkPrice.toLocaleString()}
                     </span>
-                    <span className="text-sm text-gray-500 line-through decoration-1">
+                    <span className="text-[10px] text-gray-500 line-through decoration-1 sm:text-sm">
                       KES {product.price.toLocaleString()}
                     </span>
                   </div>
-                  <p className="mt-1 text-xs text-gray-500">Wholesale unit rate</p>
+                  <p className="mt-0.5 text-[10px] text-gray-500 sm:mt-1 sm:text-xs">Wholesale unit rate</p>
                 </div>
 
-                <div className="mb-3 flex items-center justify-between text-xs text-gray-600">
+                <div className="mb-2 flex items-center justify-between text-[10px] text-gray-600 sm:mb-3 sm:text-xs">
                   <p>
                     Min. order: <span className="font-semibold text-gray-800">{product.minOrder} units</span>
                   </p>
@@ -203,11 +203,11 @@ export default function FeaturedProducts() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2">
                   <button
                     type="button"
                     onClick={() => handleAddToCart(product)}
-                    className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2 font-medium text-white transition ${
+                    className={`flex flex-1 items-center justify-center gap-1 rounded-md py-1.5 text-xs font-medium text-white transition sm:gap-2 sm:rounded-lg sm:py-2 sm:text-sm ${
                       addedProductId === product.id ? "bg-emerald-600 animate-cart-bump" : "bg-primary-600 hover:bg-primary-700"
                     }`}
                   >
@@ -216,7 +216,7 @@ export default function FeaturedProducts() {
                   </button>
                   <Link
                     href={`/products/${product.id}`}
-                    className="inline-flex items-center justify-center rounded-lg border border-gray-300 p-2 text-gray-700 transition hover:border-primary-600 hover:text-primary-700"
+                    className="inline-flex items-center justify-center rounded-md border border-gray-300 p-1.5 text-gray-700 transition hover:border-primary-600 hover:text-primary-700 sm:rounded-lg sm:p-2"
                     aria-label={`View details for ${product.name}`}
                   >
                     <FiArrowRight />
