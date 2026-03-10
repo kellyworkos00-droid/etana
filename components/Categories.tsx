@@ -19,7 +19,7 @@ const categories = [
     color: "bg-orange-500",
     image:
       "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&q=80",
-    size: "md:col-span-2 md:row-span-2",
+    size: "",
     link: "/products?category=Groceries",
   },
   {
@@ -63,7 +63,7 @@ const categories = [
     color: "bg-pink-500",
     image:
       "https://images.unsplash.com/photo-1445205170230-053b83016050?w=1200&q=80",
-    size: "md:col-span-2",
+    size: "",
     link: "/products?category=Fashion%20%26%20Apparel",
   },
   {
@@ -98,14 +98,14 @@ export default function Categories() {
           </p>
         </div>
 
-        <div className="grid auto-rows-[220px] grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-4">
+        <div className="grid auto-rows-[180px] grid-cols-2 gap-3 sm:auto-rows-[190px] sm:grid-cols-3 lg:grid-cols-6">
           {categories.map((category) => {
             const Icon = category.icon;
             return (
               <Link
                 key={category.id}
                 href={category.link}
-                className={`group relative overflow-hidden rounded-3xl border border-white/40 shadow-md transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl ${category.size}`}
+                className={`group relative overflow-hidden rounded-2xl border border-white/40 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${category.size}`}
               >
                 <Image
                   src={category.image}
@@ -117,24 +117,24 @@ export default function Categories() {
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent transition-all duration-500 group-hover:from-black/80" />
 
-                <div className="absolute inset-0 flex flex-col justify-between p-5">
+                <div className="absolute inset-0 flex flex-col justify-between p-3.5">
                   <div className="flex items-start justify-between">
                     <div
-                      className={`${category.color} inline-flex h-11 w-11 items-center justify-center rounded-2xl shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6`}
+                      className={`${category.color} inline-flex h-9 w-9 items-center justify-center rounded-xl shadow-lg transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3`}
                     >
-                      <Icon className="text-xl text-white" />
+                      <Icon className="text-base text-white" />
                     </div>
-                    <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-gray-800">
+                    <span className="rounded-full bg-white/90 px-2.5 py-0.5 text-[11px] font-semibold text-gray-800">
                       {category.count} items
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="mb-2 text-2xl font-bold tracking-tight text-white text-balance">
+                    <h3 className="mb-1 text-base font-bold tracking-tight text-white text-balance sm:text-lg">
                       {category.name}
                     </h3>
 
-                    <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1 text-sm font-semibold text-white backdrop-blur-sm transition group-hover:bg-primary-600">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-0.5 text-xs font-semibold text-white backdrop-blur-sm transition group-hover:bg-primary-600">
                       Explore <FiArrowRight className="transition-transform group-hover:translate-x-1" />
                     </span>
                   </div>
