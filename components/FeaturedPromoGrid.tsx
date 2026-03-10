@@ -26,11 +26,18 @@ export default function FeaturedPromoGrid() {
             ? "https://eterna-admin-jade.vercel.app/api/v1"
             : "http://localhost:3001/api/v1";
 
-        const res = await fetch(`${baseUrl}/products?limit=4&sort=discount`);
+        const res = await fetch(`${baseUrl}/products?limit=100`);
         if (res.ok) {
           const data = await res.json();
-          const promos = (data.items || [])
-            .filter((p: any) => p.discountPct > 0)
+          // Get all active products and sort by discount, then by price
+          const allProducts = (data.items || [])
+            .filter((p: any) => p.isActive !== false)
+            .sort((a: any, b: any) => {
+              if (b.discountPct !== a.discountPct) {
+                return b.discountPct - a.discountPct;
+              }
+              return b.price - a.price;
+            })
             .slice(0, 4)
             .map((p: any) => ({
               id: p.id,
@@ -38,62 +45,23 @@ export default function FeaturedPromoGrid() {
               category: p.category,
               image: p.imageUrl,
               price: p.price,
-              discount: p.discountPct,
+              discount: p.discountPct || 0,
               cta: "Shop Now",
-              badgeText: `${p.discountPct}% OFF`,
+              badgeText: p.discountPct > 0 ? `${p.discountPct}% OFF` : undefined,
             }));
-          setProducts(promos.length > 0 ? promos : getDefaultPromos());
+          setProducts(allProducts);
         }
       } catch (error) {
-        setProducts(getDefaultPromos());
+        setProducts([]);
       }
     };
 
     fetchProducts();
   }, []);
 
-  const getDefaultPromos = (): PromoBanner[] => [
-    {
-      id: "1",
-      name: "Best Sellers",
-      category: "Featured",
-      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80",
-      price: 2999,
-      discount: 25,
-      cta: "Shop Now",
-      badgeText: "25% OFF",
-    },
-    {
-      id: "2",
-      name: "New Arrivals",
-      category: "Fresh Stock",
-      image: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=500&q=80",
-      price: 1499,
-      discount: 30,
-      cta: "Explore",
-      badgeText: "NEW",
-    },
-    {
-      id: "3",
-      name: "Premium Collection",
-      category: "Exclusive",
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80",
-      price: 5999,
-      discount: 20,
-      cta: "View",
-      badgeText: "20% OFF",
-    },
-    {
-      id: "4",
-      name: "Value Packs",
-      category: "Bulk Deals",
-      image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500&q=80",
-      price: 899,
-      discount: 40,
-      cta: "Buy",
-      badgeText: "40% OFF",
-    },
-  ];
+  if (products.length === 0) {
+    return null;
+  }
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
