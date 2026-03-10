@@ -52,7 +52,7 @@ export default function CategoriesPage() {
     <main className="min-h-screen bg-gradient-to-b from-white to-rose-50/35 px-4 pb-24 pt-28 md:pb-10">
       <div className="mx-auto max-w-7xl">
         <header className="mb-8 text-center md:text-left">
-          <h1 className="font-display text-4xl text-gray-900 md:text-5xl">Categories</h1>
+          <h1 className="font-display text-4xl text-gray-900 md:text-5xl">Hot Category</h1>
           <p className="mt-2 max-w-2xl text-gray-600">
             Explore our wholesale catalog by category and quickly jump into product groups that match your business needs.
           </p>
