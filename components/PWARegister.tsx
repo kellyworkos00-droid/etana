@@ -17,8 +17,30 @@ export default function PWARegister() {
       return;
     }
 
+    if (process.env.NODE_ENV !== "production") {
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .getRegistrations()
+          .then((registrations) => Promise.all(registrations.map((registration) => registration.unregister())))
+          .catch(() => {
+            // Ignore dev cleanup failures.
+          });
+      }
+
+      if ("caches" in window) {
+        caches
+          .keys()
+          .then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
+          .catch(() => {
+            // Ignore dev cleanup failures.
+          });
+      }
+
+      return;
+    }
+
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch(() => {
+      navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" }).catch(() => {
         // Registration failures are non-fatal for browsing.
       });
     }
