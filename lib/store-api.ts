@@ -16,6 +16,12 @@ type AdminProduct = {
   sizePrices?: Record<string, number>;
 };
 
+type PaginationMeta = {
+  page: number;
+  limit: number;
+  total: number;
+};
+
 type SliderProduct = {
   id: string;
   name: string;
@@ -106,20 +112,69 @@ function extractData<T>(payload: unknown): T | null {
   return (root.data as T) ?? null;
 }
 
+function extractMeta(payload: unknown): PaginationMeta | null {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+
+  const root = payload as { data?: unknown };
+  if (!root.data || typeof root.data !== "object") {
+    return null;
+  }
+
+  const dataRoot = root.data as { meta?: unknown };
+  if (!dataRoot.meta || typeof dataRoot.meta !== "object") {
+    return null;
+  }
+
+  const meta = dataRoot.meta as Partial<PaginationMeta>;
+  const page = Number(meta.page);
+  const limit = Number(meta.limit);
+  const total = Number(meta.total);
+
+  if (!Number.isFinite(page) || !Number.isFinite(limit) || !Number.isFinite(total)) {
+    return null;
+  }
+
+  return { page, limit, total };
+}
+
 export async function fetchProductsFromApi(): Promise<Product[]> {
   try {
-    const response = await fetch(`${getApiBaseUrl()}/products`, { cache: "no-store" });
-    if (!response.ok) {
-      return [];
+    const pageSize = 100;
+    let page = 1;
+    let totalPages = 1;
+    const allItems: AdminProduct[] = [];
+
+    while (page <= totalPages) {
+      const response = await fetch(`${getApiBaseUrl()}/products?page=${page}&limit=${pageSize}`, {
+        cache: "no-store",
+      });
+
+      if (!response.ok) {
+        break;
+      }
+
+      const payload = (await response.json()) as unknown;
+      const data = extractData<AdminProduct[]>(payload);
+      const meta = extractMeta(payload);
+
+      if (!data || !Array.isArray(data) || data.length === 0) {
+        break;
+      }
+
+      allItems.push(...data);
+
+      if (meta) {
+        totalPages = Math.max(1, Math.ceil(meta.total / Math.max(1, meta.limit)));
+      } else {
+        break;
+      }
+
+      page += 1;
     }
 
-    const payload = (await response.json()) as unknown;
-    const data = extractData<AdminProduct[]>(payload);
-    if (!data || !Array.isArray(data)) {
-      return [];
-    }
-
-    return data.map(normalizeProduct);
+    return allItems.map(normalizeProduct);
   } catch {
     return [];
   }
