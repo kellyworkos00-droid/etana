@@ -20,7 +20,7 @@ const categories = [
     image:
       "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&q=80",
     size: "md:col-span-2 md:row-span-2",
-    link: "/categories/groceries",
+    link: "/products?category=Groceries",
   },
   {
     id: 2,
@@ -31,7 +31,7 @@ const categories = [
     image:
       "https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=1200&q=80",
     size: "",
-    link: "/categories/home-living",
+    link: "/products?category=Home%20%26%20Living",
   },
   {
     id: 3,
@@ -42,7 +42,7 @@ const categories = [
     image:
       "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=1200&q=80",
     size: "",
-    link: "/categories/electronics",
+    link: "/products?category=Electronics",
   },
   {
     id: 4,
@@ -53,7 +53,7 @@ const categories = [
     image:
       "https://images.unsplash.com/photo-1581147036324-c1c7d39a3a2d?w=1200&q=80",
     size: "",
-    link: "/categories/tools-hardware",
+    link: "/products?category=Tools%20%26%20Hardware",
   },
   {
     id: 5,
@@ -64,7 +64,7 @@ const categories = [
     image:
       "https://images.unsplash.com/photo-1445205170230-053b83016050?w=1200&q=80",
     size: "md:col-span-2",
-    link: "/categories/fashion",
+    link: "/products?category=Fashion%20%26%20Apparel",
   },
   {
     id: 6,
@@ -75,7 +75,7 @@ const categories = [
     image:
       "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=1200&q=80",
     size: "",
-    link: "/categories/health-beauty",
+    link: "/products?category=Health%20%26%20Beauty",
   },
 ];
 

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { FiArrowRight, FiFilter, FiSearch } from "react-icons/fi";
 import { products, type Product } from "@/lib/products";
 import { fetchProductsFromApi, LIVE_REFRESH_INTERVAL_MS } from "@/lib/store-api";
@@ -11,10 +12,28 @@ type CategoryFilter = "all" | Product["category"];
 type SortKey = "popular" | "price-low" | "price-high";
 
 export default function ProductsPage() {
+  const searchParams = useSearchParams();
   const [catalog, setCatalog] = useState<Product[]>(products);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [sort, setSort] = useState<SortKey>("popular");
+
+  const availableCategories = useMemo(
+    () => Array.from(new Set(catalog.map((product) => product.category))),
+    [catalog]
+  );
+
+  useEffect(() => {
+    const categoryFromQuery = searchParams.get("category");
+    if (!categoryFromQuery) {
+      return;
+    }
+
+    const match = availableCategories.find((item) => item === categoryFromQuery);
+    if (match) {
+      setCategory(match);
+    }
+  }, [availableCategories, searchParams]);
 
   useEffect(() => {
     let mounted = true;
@@ -95,9 +114,11 @@ export default function ProductsPage() {
                 className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
               >
                 <option value="all">All categories</option>
-                <option value="Groceries">Groceries</option>
-                <option value="Home & Living">Home & Living</option>
-                <option value="Health & Beauty">Health & Beauty</option>
+                {availableCategories.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
               </select>
             </label>
 
