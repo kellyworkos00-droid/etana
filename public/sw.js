@@ -1,12 +1,7 @@
-const CACHE_NAME = "eterna-pwa-v2";
-const OFFLINE_URL = "/offline.html";
-
-const CORE_ASSETS = ["/", "/offline.html", "/logo.png", "/manifest.webmanifest"];
+const CACHE_NAME = "eterna-pwa-v3";
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE_ASSETS)).then(() => self.skipWaiting())
-  );
+  event.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener("activate", (event) => {
@@ -14,76 +9,12 @@ self.addEventListener("activate", (event) => {
     caches
       .keys()
       .then((keys) => Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))))
+      .then(() => self.registration.unregister())
       .then(() => self.clients.claim())
   );
 });
 
 self.addEventListener("fetch", (event) => {
-  const { request } = event;
-  const url = new URL(request.url);
-  const isLocalhost = self.location.hostname === "localhost" || self.location.hostname === "127.0.0.1";
-
-  const isNextAsset =
-    url.pathname.startsWith("/_next/") ||
-    url.pathname.endsWith(".js") ||
-    url.pathname.endsWith(".css") ||
-    url.pathname.endsWith(".map");
-
-  if (request.method !== "GET") {
-    return;
-  }
-
-  // Avoid offline-page interception loops during local development.
-  if (isLocalhost) {
-    event.respondWith(fetch(request));
-    return;
-  }
-
-  // Never cache Next.js build/runtime assets in SW to avoid stale chunk errors.
-  if (isNextAsset) {
-    event.respondWith(fetch(request));
-    return;
-  }
-
-  if (request.mode === "navigate") {
-    event.respondWith(
-      fetch(request).catch(() => caches.match(OFFLINE_URL).then((response) => response || caches.match("/")))
-    );
-    return;
-  }
-
-  event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      return fetch(request)
-        .then((networkResponse) => {
-          if (!networkResponse || networkResponse.status !== 200) {
-            return networkResponse;
-          }
-
-          // Only cache same-origin static assets that are safe to reuse.
-          const isCacheableStatic =
-            url.origin === self.location.origin &&
-            (url.pathname.startsWith("/uploads/") ||
-              url.pathname.startsWith("/icons/") ||
-              url.pathname.endsWith(".png") ||
-              url.pathname.endsWith(".jpg") ||
-              url.pathname.endsWith(".jpeg") ||
-              url.pathname.endsWith(".webp") ||
-              url.pathname.endsWith(".svg") ||
-              url.pathname.endsWith(".ico") ||
-              url.pathname.endsWith(".html"));
-
-          const responseClone = networkResponse.clone();
-          if (isCacheableStatic) {
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
-          }
-          return networkResponse;
-        })
-        .catch(() => caches.match("/logo.png"));
-    })
-  );
+  // Pass everything through the network to avoid stale-cache offline loops.
+  event.respondWith(fetch(event.request));
 });
