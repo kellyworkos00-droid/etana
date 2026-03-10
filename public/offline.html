@@ -3,175 +3,384 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Eterna Offline</title>
+    <title>Eterna — Offline Mode</title>
     <style>
       :root {
         color-scheme: light;
       }
+
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         margin: 0;
         min-height: 100vh;
-        display: grid;
-        place-items: center;
-        font-family: "Segoe UI", Arial, sans-serif;
-        background: linear-gradient(145deg, #fff1f2, #ffffff);
-        color: #3f3f46;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(135deg, #fff5f7 0%, #fef3f4 50%, #ffffff 100%);
+        color: #2d3748;
+        padding: 1.5rem;
       }
-      .card {
-        width: min(92vw, 430px);
-        background: rgba(255, 255, 255, 0.92);
-        border: 1px solid #fecdd3;
-        border-radius: 18px;
-        padding: 24px;
-        text-align: center;
-        box-shadow: 0 18px 45px rgba(190, 18, 60, 0.12);
+
+      main {
+        max-width: 480px;
+        margin: 0 auto;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
+
+      .offline-card {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        border: 1.5px solid #fecdd3;
+        border-radius: 2rem;
+        padding: 2.5rem 1.75rem;
+        box-shadow: 0 20px 60px rgba(190, 18, 60, 0.15),
+                    0 0 0 1px rgba(254, 205, 211, 0.5);
+        animation: slideUp 0.5s ease-out;
+      }
+
+      .network-icon {
+        width: 4.5rem;
+        height: 4.5rem;
+        margin: 0 auto 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+        border-radius: 50%;
+        font-size: 2rem;
+      }
+
+      .network-icon.success {
+        background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+        color: #15803d;
+      }
+
       h1 {
-        margin: 14px 0 10px;
-        font-size: 1.4rem;
-        color: #9f1239;
+        margin: 0 0 0.75rem;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #831843;
+        letter-spacing: -0.025em;
       }
-      p {
-        margin: 0;
-        line-height: 1.55;
+
+      .subtitle {
+        font-size: 0.95rem;
+        color: #666;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
       }
-      img {
-        width: 110px;
-        height: auto;
+
+      .status-indicator {
+        background: #fff5f7;
+        border: 1px solid #fbcfe8;
+        border-radius: 1rem;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
       }
-      .loader {
-        margin: 18px auto 0;
+
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #dc2626;
+        animation: pulse 2s infinite;
+        flex-shrink: 0;
+      }
+
+      .status-dot.active {
+        background: #16a34a;
+        animation: pulse-green 2s infinite;
+      }
+
+      .status-text {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #831843;
+        flex: 1;
+      }
+
+      .tips {
+        background: #faf5ff;
+        border-left: 3px solid #e11d48;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.85rem;
+        color: #555;
+        line-height: 1.5;
+      }
+
+      .tips strong {
+        color: #831843;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-direction: column;
+      }
+
+      button {
+        padding: 0.875rem 1.5rem;
+        border: none;
+        border-radius: 1rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #dc2626, #b91c1c);
+        color: white;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        background: linear-gradient(135deg, #b91c1c, #991b1b);
+        box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+        transform: translateY(-2px);
+      }
+
+      .btn-secondary {
+        background: white;
+        color: #831843;
+        border: 2px solid #fecdd3;
+      }
+
+      .btn-secondary:hover:not(:disabled) {
+        background: #fff5f7;
+        border-color: #fbcfe8;
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .loader-text {
+        text-align: center;
+        font-size: 0.9rem;
+        color: #717171;
+        margin-top: 1rem;
+      }
+
+      .reconnecting {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        color: #9f1239;
-        font-size: 0.92rem;
+        gap: 0.4rem;
+        color: #831843;
         font-weight: 600;
       }
-      .pulse-ring {
-        width: 12px;
-        height: 12px;
-        border-radius: 999px;
-        border: 2px solid #be123c;
-        box-shadow: 0 0 0 0 rgba(190, 18, 60, 0.35);
-        animation: ping 1.6s infinite;
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(24px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
-      .dots {
-        display: inline-flex;
-        min-width: 18px;
-      }
-      .status {
-        margin-top: 12px;
-        font-size: 0.82rem;
-        color: #71717a;
-      }
-      @keyframes ping {
-        0% {
-          box-shadow: 0 0 0 0 rgba(190, 18, 60, 0.35);
+
+      @keyframes pulse {
+        0%, 100% {
+          box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6);
           transform: scale(1);
         }
-        70% {
-          box-shadow: 0 0 0 10px rgba(190, 18, 60, 0);
-          transform: scale(1.05);
+        50% {
+          box-shadow: 0 0 0 6px rgba(220, 38, 38, 0);
+          transform: scale(1.1);
         }
-        100% {
-          box-shadow: 0 0 0 0 rgba(190, 18, 60, 0);
+      }
+
+      @keyframes pulse-green {
+        0%, 100% {
+          box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.6);
           transform: scale(1);
+        }
+        50% {
+          box-shadow: 0 0 0 6px rgba(22, 163, 74, 0);
+          transform: scale(1.1);
+        }
+      }
+
+      @media (max-width: 480px) {
+        body {
+          padding: 1rem;
+        }
+
+        .offline-card {
+          padding: 1.75rem 1.25rem;
+        }
+
+        h1 {
+          font-size: 1.5rem;
+        }
+
+        .action-buttons {
+          flex-direction: column;
+        }
+
+        button {
+          width: 100%;
         }
       }
     </style>
   </head>
   <body>
-    <main class="card">
-      <img src="/logo.png" alt="Eterna logo" />
-      <h1>You are offline</h1>
-      <p>Connection is unavailable right now. Please reconnect and reload to continue shopping.</p>
-      <div class="loader" aria-live="polite">
-        <span class="pulse-ring" aria-hidden="true"></span>
-        Reconnecting<span class="dots" id="dots">.</span>
+    <main>
+      <div class="offline-card">
+        <div class="network-icon" id="icon">📡</div>
+
+        <h1>Connection Lost</h1>
+        <p class="subtitle">Your internet connection is unavailable. Eterna is waiting to reconnect automatically.</p>
+
+        <div class="status-indicator">
+          <div class="status-dot" id="statusDot"></div>
+          <span class="status-text" id="statusText">Searching for connection...</span>
+        </div>
+
+        <div class="tips">
+          <strong>💡 Quick fixes:</strong><br />
+          • Check your WiFi or mobile data<br />
+          • Try toggling airplane mode off<br />
+          • Move closer to a network
+        </div>
+
+        <p class="loader-text">
+          <span class="reconnecting">
+            <span id="dots">·</span>
+            <span class="status-message" id="statusMessage">Reconnecting</span>
+          </span>
+        </p>
+
+        <div class="action-buttons">
+          <button class="btn-primary" id="reloadBtn" onclick="manualReload()">
+            Reconnect Now
+          </button>
+          <button class="btn-secondary" onclick="window.location.href='/'">
+            Return to Home
+          </button>
+        </div>
       </div>
-      <p class="status" id="status">Waiting for internet connection...</p>
     </main>
     <script>
       (function () {
-        var dotCount = 1;
+        var statusText = document.getElementById("statusText");
+        var statusDot = document.getElementById("statusDot");
+        var statusMessage = document.getElementById("statusMessage");
         var dots = document.getElementById("dots");
-        var status = document.getElementById("status");
+        var icon = document.getElementById("icon");
+        var reloadBtn = document.getElementById("reloadBtn");
+        var dotIndex = 0;
+        var dotSequence = ["·", "·", "·"];
 
-        function setStatus(message) {
-          if (status) status.textContent = message;
+        function updateStatus(message, isOnline) {
+          if (statusText) statusText.textContent = message;
+          if (statusMessage) statusMessage.textContent = message;
+          
+          if (statusDot) {
+            statusDot.classList.toggle("active", isOnline);
+          }
+          
+          if (icon) {
+            icon.textContent = isOnline ? "✓" : "📡";
+            if (isOnline) {
+              icon.style.animation = "slideUp 0.4s ease-out";
+            }
+          }
         }
 
         function recoverApp() {
-          setStatus("Connection restored. Preparing app...");
-
-          var unregisterPromise = Promise.resolve();
-          if ("serviceWorker" in navigator) {
-            unregisterPromise = navigator.serviceWorker
-              .getRegistrations()
-              .then(function (registrations) {
-                return Promise.all(
-                  registrations.map(function (registration) {
-                    return registration.unregister();
-                  })
-                );
-              })
-              .catch(function () {
-                return [];
-              });
-          }
+          updateStatus("Connected! Reloading...", true);
+          reloadBtn.disabled = true;
+          reloadBtn.textContent = "Reloading...";
 
           var cachePromise = Promise.resolve();
           if ("caches" in window) {
             cachePromise = caches
               .keys()
               .then(function (keys) {
-                return Promise.all(
-                  keys.map(function (key) {
-                    return caches.delete(key);
-                  })
-                );
+                return Promise.all(keys.map(function (key) { return caches.delete(key); }));
               })
-              .catch(function () {
-                return [];
-              });
+              .catch(function () { return []; });
           }
 
-          Promise.all([unregisterPromise, cachePromise]).finally(function () {
-            setStatus("Reloading app...");
+          setTimeout(function () {
             window.location.replace("/?reconnect=" + Date.now());
-          });
+          }, 500);
         }
 
-        function pingApp() {
+        function manualReload() {
+          reloadBtn.disabled = true;
+          reloadBtn.textContent = "Checking...";
+          updateStatus("Testing connection...", false);
+
+          fetch("/?healthcheck=" + Date.now(), { cache: "no-store" })
+            .then(function (response) {
+              if (response && response.ok) {
+                recoverApp();
+              } else {
+                reloadBtn.disabled = false;
+                reloadBtn.textContent = "Reconnect Now";
+                updateStatus("No connection yet", false);
+              }
+            })
+            .catch(function () {
+              reloadBtn.disabled = false;
+              reloadBtn.textContent = "Reconnect Now";
+              updateStatus("Still offline", false);
+            });
+        }
+
+        function ping() {
           fetch("/?healthcheck=" + Date.now(), { cache: "no-store" })
             .then(function (response) {
               if (response && response.ok) {
                 recoverApp();
               }
             })
-            .catch(function () {
-              setStatus("Waiting for internet connection...");
-            });
+            .catch(function () {});
         }
 
+        // Animate dots
         setInterval(function () {
-          dotCount = (dotCount % 3) + 1;
-          if (dots) dots.textContent = ".".repeat(dotCount);
-        }, 450);
+          if (dots) {
+            dots.textContent = dotSequence[dotIndex % 3];
+            dotIndex++;
+          }
+        }, 400);
 
-        setInterval(pingApp, 2500);
-        setTimeout(pingApp, 300);
+        // Auto-ping every 3 seconds
+        setInterval(ping, 3000);
+        setTimeout(ping, 1000);
 
+        // Immediate check if online
         if (navigator.onLine) {
-          setStatus("Connection detected. Recovering app...");
-          recoverApp();
+          updateStatus("Connection detected", true);
+          setTimeout(recoverApp, 500);
         }
 
+        // Listen for online event
         window.addEventListener("online", function () {
           recoverApp();
         });
+
+        // Make manualReload global
+        window.manualReload = manualReload;
       })();
     </script>
+  </body>
+</html>
   </body>
 </html>
