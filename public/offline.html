@@ -163,6 +163,11 @@
         setInterval(pingApp, 2500);
         setTimeout(pingApp, 300);
 
+        if (navigator.onLine) {
+          setStatus("Connection detected. Recovering app...");
+          recoverApp();
+        }
+
         window.addEventListener("online", function () {
           recoverApp();
         });
