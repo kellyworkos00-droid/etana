@@ -12,14 +12,31 @@ type ProductPurchasePanelProps = {
   price: number;
   minOrder: number;
   sizes?: string[];
+  sizePrices?: Record<string, number>;
 };
 
-export default function ProductPurchasePanel({ id, name, image, price, minOrder, sizes = [] }: ProductPurchasePanelProps) {
+export default function ProductPurchasePanel({
+  id,
+  name,
+  image,
+  price,
+  minOrder,
+  sizes = [],
+  sizePrices = {},
+}: ProductPurchasePanelProps) {
   const [quantity, setQuantity] = useState(minOrder);
   const [added, setAdded] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string>(sizes[0] ?? "");
 
-  const orderValue = useMemo(() => quantity * price, [quantity, price]);
+  const activeUnitPrice = useMemo(() => {
+    if (!selectedSize) {
+      return price;
+    }
+    const bySize = Number(sizePrices[selectedSize]);
+    return Number.isFinite(bySize) && bySize > 0 ? bySize : price;
+  }, [price, selectedSize, sizePrices]);
+
+  const orderValue = useMemo(() => quantity * activeUnitPrice, [quantity, activeUnitPrice]);
 
   const decreaseQty = () => {
     setQuantity((current) => Math.max(minOrder, current - 1));
@@ -36,7 +53,7 @@ export default function ProductPurchasePanel({ id, name, image, price, minOrder,
         id,
         name,
         image,
-        price,
+        price: activeUnitPrice,
         quantity,
         minOrder,
         selectedSize: normalizedSize || undefined,
@@ -81,6 +98,10 @@ export default function ProductPurchasePanel({ id, name, image, price, minOrder,
       </div>
 
       <div className="mt-4 rounded-xl bg-rose-50/50 px-3 py-2 text-sm text-gray-700">
+        Unit price: <span className="font-semibold text-primary-700">KES {activeUnitPrice.toLocaleString()}</span>
+      </div>
+
+      <div className="mt-2 rounded-xl bg-rose-50/50 px-3 py-2 text-sm text-gray-700">
         Estimated order value: <span className="font-semibold text-primary-700">KES {orderValue.toLocaleString()}</span>
       </div>
 
@@ -102,6 +123,7 @@ export default function ProductPurchasePanel({ id, name, image, price, minOrder,
                   }`}
                 >
                   {size}
+                  {sizePrices[size] ? ` - KES ${Number(sizePrices[size]).toLocaleString()}` : ""}
                 </button>
               );
             })}

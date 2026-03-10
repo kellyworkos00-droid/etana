@@ -94,6 +94,7 @@ export default async function ProductDetailsPage({ params }: ProductPageProps) {
               price={currentProduct.bulkPrice}
               minOrder={currentProduct.minOrder}
               sizes={currentProduct.sizes}
+              sizePrices={currentProduct.sizePrices}
             />
             <ul className="mt-6 space-y-2 text-sm text-gray-600">
               <li className="flex items-center gap-2">

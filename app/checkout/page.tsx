@@ -66,6 +66,7 @@ export default function CheckoutPage() {
       items: cartItems.map((item) => ({
         productId: String(item.id),
         quantity: item.quantity,
+        selectedSize: item.selectedSize,
       })),
     });
 
@@ -107,6 +108,7 @@ export default function CheckoutPage() {
         items: cartItems.map((item) => ({
           productId: String(item.id),
           quantity: item.quantity,
+          selectedSize: item.selectedSize,
         })),
       });
 

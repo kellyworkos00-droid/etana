@@ -10,6 +10,7 @@ export type Product = {
   image: string;
   discount: number;
   sizes?: string[];
+  sizePrices?: Record<string, number>;
 };
 
 export const products: Product[] = [

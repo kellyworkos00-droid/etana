@@ -13,6 +13,7 @@ type AdminProduct = {
   minOrder: number;
   discountPct: number;
   sizes?: string[];
+  sizePrices?: Record<string, number>;
 };
 
 type SliderProduct = {
@@ -48,7 +49,7 @@ type CreateOrderPayload = {
   notes?: string;
   paymentMethod: "CARD" | "MPESA" | "BANK" | "COD";
   promoCode?: string;
-  items: Array<{ productId: string; quantity: number }>;
+  items: Array<{ productId: string; quantity: number; selectedSize?: string }>;
 };
 
 type PromoValidationResult = {
@@ -69,6 +70,15 @@ function getApiBaseUrl() {
 }
 
 function normalizeProduct(item: AdminProduct): Product {
+  const sizePrices: Record<string, number> = {};
+  for (const [size, value] of Object.entries(item.sizePrices ?? {})) {
+    const normalizedSize = String(size).trim();
+    const normalizedPrice = Number(value);
+    if (normalizedSize && Number.isFinite(normalizedPrice) && normalizedPrice > 0) {
+      sizePrices[normalizedSize] = normalizedPrice;
+    }
+  }
+
   return {
     id: String(item.id),
     name: item.name,
@@ -79,6 +89,7 @@ function normalizeProduct(item: AdminProduct): Product {
     image: item.imageUrl,
     discount: Number(item.discountPct ?? 0),
     sizes: Array.isArray(item.sizes) ? item.sizes.map((size) => String(size).trim()).filter(Boolean) : [],
+    sizePrices,
   };
 }
 
