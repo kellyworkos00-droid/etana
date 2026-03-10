@@ -141,13 +141,13 @@ function ProductsPageContent() {
           </p>
         </section>
 
-        <section className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4 xl:grid-cols-5">
+        <section className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4 xl:grid-cols-5">
           {filteredProducts.map((product) => (
             <article
               key={product.id}
-              className="group overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+              className="group overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:rounded-lg"
             >
-              <div className="relative h-28 overflow-hidden bg-gray-100 sm:h-36">
+              <div className="relative h-[88px] overflow-hidden bg-gray-100 sm:h-36">
                 <Image
                   src={product.image}
                   alt={product.name}
@@ -155,27 +155,27 @@ function ProductsPageContent() {
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <span className="absolute left-1.5 top-1.5 rounded-full bg-primary-600 px-1.5 py-0.5 text-[9px] font-bold text-white sm:left-2 sm:top-2 sm:px-2 sm:text-[10px]">
+                <span className="absolute left-1 top-1 rounded-full bg-primary-600 px-1 py-0.5 text-[8px] font-bold text-white sm:left-2 sm:top-2 sm:px-2 sm:text-[10px]">
                   -{product.discount}%
                 </span>
               </div>
 
-              <div className="p-2.5 sm:p-3">
-                <p className="mb-1 line-clamp-1 text-[10px] font-semibold uppercase tracking-wide text-gray-500 sm:text-[11px]">
+              <div className="p-2 sm:p-3">
+                <p className="mb-1 line-clamp-1 text-[9px] font-semibold uppercase tracking-wide text-gray-500 sm:text-[11px]">
                   {product.category}
                 </p>
-                <h2 className="mb-1.5 line-clamp-2 text-xs font-semibold text-gray-900 sm:mb-2 sm:text-sm">{product.name}</h2>
+                <h2 className="mb-1 line-clamp-2 text-[11px] font-semibold text-gray-900 sm:mb-2 sm:text-sm">{product.name}</h2>
 
-                <div className="mb-1.5 flex items-baseline gap-1 sm:mb-2 sm:gap-1.5">
-                  <span className="text-xs font-bold text-primary-700 sm:text-sm">KES {product.bulkPrice.toLocaleString()}</span>
-                  <span className="text-[10px] text-gray-500 line-through sm:text-[11px]">KES {product.price.toLocaleString()}</span>
+                <div className="mb-1 flex items-baseline gap-1 sm:mb-2 sm:gap-1.5">
+                  <span className="text-[11px] font-bold text-primary-700 sm:text-sm">KES {product.bulkPrice.toLocaleString()}</span>
+                  <span className="text-[9px] text-gray-500 line-through sm:text-[11px]">KES {product.price.toLocaleString()}</span>
                 </div>
 
-                <p className="mb-2 text-[10px] text-gray-500 sm:mb-3 sm:text-[11px]">Min: {product.minOrder} units</p>
+                <p className="mb-1.5 text-[9px] text-gray-500 sm:mb-3 sm:text-[11px]">Min: {product.minOrder} units</p>
 
                 <Link
                   href={`/products/${product.id}`}
-                  className="inline-flex w-full items-center justify-center gap-1 rounded-md border border-gray-300 px-1.5 py-1 text-[11px] font-semibold text-gray-700 transition hover:border-primary-500 hover:text-primary-700 sm:px-2 sm:py-1.5 sm:text-xs"
+                  className="inline-flex w-full items-center justify-center gap-1 rounded-md border border-gray-300 px-1 py-0.5 text-[10px] font-semibold text-gray-700 transition hover:border-primary-500 hover:text-primary-700 sm:px-2 sm:py-1.5 sm:text-xs"
                 >
                   View Product <FiArrowRight className="text-xs" />
                 </Link>
