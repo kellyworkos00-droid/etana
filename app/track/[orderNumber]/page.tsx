@@ -36,6 +36,28 @@ const ETA_HINTS: Partial<Record<BuyerTrackedOrder["status"], string>> = {
   DELIVERED: "Delivered",
 };
 
+const STATUS_BADGE_CLASSES: Record<BuyerTrackedOrder["status"], string> = {
+  PENDING: "bg-amber-50 text-amber-800 border-amber-200",
+  PAID: "bg-emerald-50 text-emerald-800 border-emerald-200",
+  CONFIRMED: "bg-sky-50 text-sky-800 border-sky-200",
+  PACKING: "bg-indigo-50 text-indigo-800 border-indigo-200",
+  READY_FOR_PICKUP: "bg-violet-50 text-violet-800 border-violet-200",
+  PICKED_UP: "bg-fuchsia-50 text-fuchsia-800 border-fuchsia-200",
+  ON_DELIVERY: "bg-blue-50 text-blue-800 border-blue-200",
+  DELIVERED: "bg-emerald-50 text-emerald-800 border-emerald-200",
+  CANCELLED: "bg-rose-50 text-rose-800 border-rose-200",
+};
+
+function OrderStatusBadge({ status }: { status: BuyerTrackedOrder["status"] }) {
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${STATUS_BADGE_CLASSES[status]}`}
+    >
+      {STATUS_LABELS[status]}
+    </span>
+  );
+}
+
 function toStepIndex(status: BuyerTrackedOrder["status"]) {
   if (status === "PAID") {
     return 1;
@@ -125,9 +147,10 @@ export default function TrackOrderDetailsPage({ params }: TrackOrderPageProps) {
             <div className="mt-6 space-y-8">
               <section className="rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:p-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <p className="inline-flex items-center gap-2 text-sm font-semibold text-gray-900">
-                    <FiPackage /> {STATUS_LABELS[order.status]}
-                  </p>
+                  <div className="inline-flex items-center gap-2 text-sm font-semibold text-gray-900">
+                    <FiPackage />
+                    <OrderStatusBadge status={order.status} />
+                  </div>
                   <p className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold text-primary-700">
                     <FiClock /> {ETA_HINTS[order.status] ?? "In progress"}
                   </p>
