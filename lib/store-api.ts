@@ -1,6 +1,10 @@
 import type { Product } from "@/lib/products";
+import { products as staticProducts } from "@/lib/products";
 
 export const LIVE_REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+const PRODUCT_CACHE_TTL_MS = 60 * 1000;
+
+let productCache: { data: Product[]; ts: number } | null = null;
 
 type AdminProduct = {
   id: string;
@@ -140,6 +144,10 @@ function extractMeta(payload: unknown): PaginationMeta | null {
 }
 
 export async function fetchProductsFromApi(): Promise<Product[]> {
+  if (productCache && Date.now() - productCache.ts < PRODUCT_CACHE_TTL_MS) {
+    return productCache.data;
+  }
+
   try {
     const pageSize = 100;
     let page = 1;
@@ -174,9 +182,15 @@ export async function fetchProductsFromApi(): Promise<Product[]> {
       page += 1;
     }
 
-    return allItems.map(normalizeProduct);
+    const normalized = allItems.map(normalizeProduct);
+    if (normalized.length > 0) {
+      productCache = { data: normalized, ts: Date.now() };
+      return normalized;
+    }
+
+    return staticProducts;
   } catch {
-    return [];
+    return productCache?.data ?? staticProducts;
   }
 }
 

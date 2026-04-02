@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FiArrowRight } from "react-icons/fi";
+import { fetchProductsFromApi } from "@/lib/store-api";
 
 type PromoBanner = {
   id: string;
@@ -21,36 +22,25 @@ export default function FeaturedPromoGrid() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const baseUrl =
-          process.env.NODE_ENV === "production"
-            ? "https://eterna-admin-jade.vercel.app/api/v1"
-            : "http://localhost:3001/api/v1";
-
-        const res = await fetch(`${baseUrl}/products?limit=100`);
-        if (res.ok) {
-          const data = await res.json();
-          // Get all active products and sort by discount, then by price
-          const allProducts = (data.items || [])
-            .filter((p: any) => p.isActive !== false)
-            .sort((a: any, b: any) => {
-              if (b.discountPct !== a.discountPct) {
-                return b.discountPct - a.discountPct;
-              }
-              return b.price - a.price;
-            })
-            .slice(0, 4)
-            .map((p: any) => ({
-              id: p.id,
-              name: p.name,
-              category: p.category,
-              image: p.imageUrl,
-              price: p.price,
-              discount: p.discountPct || 0,
-              cta: "Shop Now",
-              badgeText: p.discountPct > 0 ? `${p.discountPct}% OFF` : undefined,
-            }));
-          setProducts(allProducts);
-        }
+        const allProducts = (await fetchProductsFromApi())
+          .sort((a, b) => {
+            if (b.discount !== a.discount) {
+              return b.discount - a.discount;
+            }
+            return b.price - a.price;
+          })
+          .slice(0, 4)
+          .map((p) => ({
+            id: p.id,
+            name: p.name,
+            category: p.category,
+            image: p.image,
+            price: p.price,
+            discount: p.discount || 0,
+            cta: "Shop Now",
+            badgeText: p.discount > 0 ? `${p.discount}% OFF` : undefined,
+          }));
+        setProducts(allProducts);
       } catch (error) {
         setProducts([]);
       }

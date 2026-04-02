@@ -12,12 +12,12 @@ import {
   FiCheckCircle,
   FiAlertCircle,
 } from "react-icons/fi";
-import type { Product } from "@/lib/products";
+import { products as staticProducts, type Product } from "@/lib/products";
 import { fetchProductsFromApi, LIVE_REFRESH_INTERVAL_MS } from "@/lib/store-api";
 import { addItemToCart } from "@/lib/cart";
 
 export default function FeaturedProducts() {
-  const [catalog, setCatalog] = useState<Product[]>([]);
+  const [catalog, setCatalog] = useState<Product[]>(staticProducts);
   const [addedProductId, setAddedProductId] = useState<string | null>(null);
   const gridRef = useRef<HTMLDivElement | null>(null);
 

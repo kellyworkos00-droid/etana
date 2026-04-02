@@ -6,7 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectCoverflow, Pagination, Navigation, Keyboard } from "swiper/modules";
 import { FiArrowRight, FiBox, FiChevronLeft, FiChevronRight, FiTrendingUp } from "react-icons/fi";
 import { fetchProductsFromApi, fetchSliderOffersFromApi, LIVE_REFRESH_INTERVAL_MS } from "@/lib/store-api";
-import type { Product } from "@/lib/products";
+import { products as staticProducts, type Product } from "@/lib/products";
 
 import "swiper/css";
 import "swiper/css/effect-coverflow";
@@ -38,12 +38,7 @@ function toOfferSlides(items: Product[]): ShowcaseItem[] {
 }
 
 export default function ShowcaseSlider() {
-  const [offerSlides, setOfferSlides] = useState<ShowcaseItem[]>([]);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const [offerSlides, setOfferSlides] = useState<ShowcaseItem[]>(toOfferSlides(staticProducts));
 
   useEffect(() => {
     let mounted = true;
@@ -82,7 +77,7 @@ export default function ShowcaseSlider() {
     return offerSlides;
   }, [offerSlides]);
 
-  if (!isMounted || slides.length === 0) {
+  if (slides.length === 0) {
     return null;
   }
 
