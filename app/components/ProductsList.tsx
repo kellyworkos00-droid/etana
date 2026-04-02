@@ -25,6 +25,7 @@ export function ProductsList({
   const [sortBy, setSortBy] = useState("newest");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const limit = 20;
@@ -33,11 +34,35 @@ export function ProductsList({
   // Fetch products only when debounced search / filters change
   useEffect(() => {
     loadProducts();
-  }, [debouncedSearch, category, sortBy, page, sellerId]);
+  }, [debouncedSearch, category, sortBy, page, sellerId, coordinates]);
 
   // Fetch categories once on mount — independent of filter changes
   useEffect(() => {
     loadCategories();
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.navigator?.geolocation) {
+      return;
+    }
+
+    window.navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setCoordinates({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      },
+      () => {
+        // Keep location optional so product browsing still works without permission.
+        setCoordinates(null);
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 4000,
+        maximumAge: 10 * 60 * 1000,
+      }
+    );
   }, []);
 
   async function loadProducts() {
@@ -50,6 +75,13 @@ export function ProductsList({
         ...(debouncedSearch && { search: debouncedSearch }),
         ...(category && { category }),
         ...(sellerId && { sellerId }),
+        ...(coordinates
+          ? {
+              lat: String(coordinates.lat),
+              lng: String(coordinates.lng),
+              radiusKm: "25",
+            }
+          : {}),
       });
 
       const res = await fetch(`/api/v1/products?${params}`);
