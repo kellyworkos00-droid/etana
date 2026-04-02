@@ -19,6 +19,7 @@ export default function CheckoutPage() {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [createdOrderNumber, setCreatedOrderNumber] = useState<string | null>(null);
   const [promoCode, setPromoCode] = useState("");
   const [promoDiscount, setPromoDiscount] = useState(0);
   const [promoMessage, setPromoMessage] = useState<string | null>(null);
@@ -95,6 +96,7 @@ export default function CheckoutPage() {
 
     setSubmitting(true);
     setMessage(null);
+    setCreatedOrderNumber(null);
 
     try {
       const order = await createOrderInApi({
@@ -112,7 +114,12 @@ export default function CheckoutPage() {
         })),
       });
 
-      setMessage(order?.orderNumber ? `Order created: ${order.orderNumber}` : "Order created successfully.");
+      if (order?.orderNumber) {
+        setMessage(`Order created: ${order.orderNumber}`);
+        setCreatedOrderNumber(order.orderNumber);
+      } else {
+        setMessage("Order created successfully.");
+      }
       clearCart();
       setCartItems([]);
     } catch {
@@ -321,6 +328,15 @@ export default function CheckoutPage() {
               </button>
 
               {message ? <p className="mt-3 text-center text-xs text-gray-600">{message}</p> : null}
+
+              {createdOrderNumber ? (
+                <Link
+                  href={`/track/${encodeURIComponent(createdOrderNumber)}`}
+                  className="mt-3 inline-flex w-full items-center justify-center rounded-lg border border-primary-300 bg-primary-50 py-2.5 text-sm font-semibold text-primary-700 transition hover:bg-primary-100"
+                >
+                  Track This Order
+                </Link>
+              ) : null}
             </div>
           </aside>
         </div>
