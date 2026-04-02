@@ -1,0 +1,150 @@
+// Eterna Marketplace — Prisma Schema
+// Core models for scalable B2B/B2C marketplace
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String   @id @default(uuid())
+  name              String
+  email             String   @unique
+  phone             String   @unique
+  passwordHash      String
+  role              Role
+  subscriptionPlan  SubscriptionPlan @default(FREE)
+  seller            Seller?
+  notifications     Notification[]
+  orders            Order[]        @relation("BuyerOrders")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  SELLER
+  BUYER
+}
+
+enum SubscriptionPlan {
+  FREE
+  BASIC
+  PRO
+  ELITE
+}
+
+model Seller {
+  id           String   @id @default(uuid())
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String   @unique
+  businessName String
+  verified     Boolean  @default(false)
+  products     Product[]
+  subscription Subscription?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Product {
+  id         String   @id @default(uuid())
+  seller     Seller   @relation(fields: [sellerId], references: [id])
+  sellerId   String
+  name       String
+  price      Float
+  bulkPrice  Float?
+  moq        Int?
+  images     String[]
+  inventory  Int
+  orders     Order[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Order {
+  id            String   @id @default(uuid())
+  buyer         User     @relation("BuyerOrders", fields: [buyerId], references: [id])
+  buyerId       String
+  seller        Seller   @relation(fields: [sellerId], references: [id])
+  sellerId      String
+  product       Product  @relation(fields: [productId], references: [id])
+  productId     String
+  quantity      Int
+  totalPrice    Float
+  deliveryFee   Float
+  status        OrderStatus
+  paymentStatus PaymentStatus
+  payment       Payment?
+  delivery      Delivery?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  READY_FOR_PICKUP
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+}
+
+model Payment {
+  id         String   @id @default(uuid())
+  order      Order    @relation(fields: [orderId], references: [id])
+  orderId    String   @unique
+  mpesaRef   String?
+  status     PaymentStatus
+  createdAt  DateTime @default(now())
+}
+
+model Delivery {
+  id                String   @id @default(uuid())
+  order             Order    @relation(fields: [orderId], references: [id])
+  orderId           String   @unique
+  pickupLocation    String
+  deliveryLocation  String
+  riderDetails      String?
+  pickupOtp         String
+  deliveryOtp       String
+  status            DeliveryStatus
+  createdAt         DateTime @default(now())
+}
+
+enum DeliveryStatus {
+  PENDING
+  ASSIGNED
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  type      String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Subscription {
+  id         String   @id @default(uuid())
+  seller     Seller   @relation(fields: [sellerId], references: [id])
+  sellerId   String   @unique
+  plan       SubscriptionPlan
+  startDate  DateTime
+  endDate    DateTime
+}

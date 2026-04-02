@@ -14,6 +14,7 @@ import {
   FiHome,
   FiGrid,
   FiBox,
+  FiPackage,
 } from "react-icons/fi";
 
 const categoryGroups = [
@@ -45,6 +46,7 @@ export default function Navbar() {
     { href: "/categories", label: "Categories", icon: FiGrid },
     { href: "/checkout", label: "Cart", icon: FiShoppingCart },
     { href: "/account", label: "Account", icon: FiUser },
+    { href: "/seller", label: "Seller", icon: FiPackage },
   ];
 
   useEffect(() => {
@@ -163,6 +165,12 @@ export default function Navbar() {
                 className="text-sm font-semibold text-gray-700 transition hover:text-primary-700"
               >
                 Contact
+              </Link>
+              <Link
+                href="/seller"
+                className="text-sm font-semibold text-gray-700 transition hover:text-primary-700"
+              >
+                Seller
               </Link>
             </div>
 

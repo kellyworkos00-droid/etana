@@ -32,20 +32,12 @@ export default function FeaturedProducts() {
     };
 
     syncProducts();
+    // Refresh every 5 minutes — products don't change that frequently
     const interval = window.setInterval(syncProducts, LIVE_REFRESH_INTERVAL_MS);
-
-    const onVisible = () => {
-      if (document.visibilityState === "visible") {
-        syncProducts();
-      }
-    };
-
-    document.addEventListener("visibilitychange", onVisible);
 
     return () => {
       mounted = false;
       window.clearInterval(interval);
-      document.removeEventListener("visibilitychange", onVisible);
     };
   }, []);
 

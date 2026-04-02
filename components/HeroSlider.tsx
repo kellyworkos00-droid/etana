@@ -79,6 +79,7 @@ export default function HeroSlider() {
     };
 
     syncSlides();
+    // Slides rarely change — refresh every 5 minutes
     const interval = window.setInterval(syncSlides, LIVE_REFRESH_INTERVAL_MS);
 
     return () => {

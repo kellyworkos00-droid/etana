@@ -1,6 +1,6 @@
 import type { Product } from "@/lib/products";
 
-export const LIVE_REFRESH_INTERVAL_MS = 8000;
+export const LIVE_REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 
 type AdminProduct = {
   id: string;
@@ -148,7 +148,7 @@ export async function fetchProductsFromApi(): Promise<Product[]> {
 
     while (page <= totalPages) {
       const response = await fetch(`${getApiBaseUrl()}/products?page=${page}&limit=${pageSize}`, {
-        cache: "no-store",
+        next: { revalidate: 60 }, // revalidate every 60 seconds
       });
 
       if (!response.ok) {
@@ -182,7 +182,7 @@ export async function fetchProductsFromApi(): Promise<Product[]> {
 
 export async function fetchProductByIdOrSlugFromApi(idOrSlug: string): Promise<Product | undefined> {
   try {
-    const response = await fetch(`${getApiBaseUrl()}/products/${idOrSlug}`, { cache: "no-store" });
+    const response = await fetch(`${getApiBaseUrl()}/products/${idOrSlug}`, { next: { revalidate: 60 } });
     if (!response.ok) {
       return undefined;
     }
@@ -201,7 +201,7 @@ export async function fetchProductByIdOrSlugFromApi(idOrSlug: string): Promise<P
 
 export async function fetchSliderOffersFromApi(): Promise<Product[]> {
   try {
-    const response = await fetch(`${getApiBaseUrl()}/slider`, { cache: "no-store" });
+    const response = await fetch(`${getApiBaseUrl()}/slider`, { next: { revalidate: 120 } });
     if (!response.ok) {
       return [];
     }
@@ -229,7 +229,7 @@ export async function fetchSliderOffersFromApi(): Promise<Product[]> {
 
 export async function fetchHomeSlidesFromApi() {
   try {
-    const response = await fetch(`${getApiBaseUrl()}/content/home-slides`, { cache: "no-store" });
+    const response = await fetch(`${getApiBaseUrl()}/content/home-slides`, { next: { revalidate: 120 } });
     if (!response.ok) {
       return [] as HomeSlide[];
     }

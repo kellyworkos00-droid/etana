@@ -69,20 +69,12 @@ export default function ShowcaseSlider() {
     };
 
     syncOffers();
+    // Refresh every 5 minutes — no need to hammer the API on every tab switch
     const interval = window.setInterval(syncOffers, LIVE_REFRESH_INTERVAL_MS);
-
-    const onVisible = () => {
-      if (document.visibilityState === "visible") {
-        syncOffers();
-      }
-    };
-
-    document.addEventListener("visibilitychange", onVisible);
 
     return () => {
       mounted = false;
       window.clearInterval(interval);
-      document.removeEventListener("visibilitychange", onVisible);
     };
   }, []);
 

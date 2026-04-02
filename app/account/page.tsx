@@ -58,6 +58,15 @@ export default function AccountPage() {
             </Link>
 
             <Link
+              href="/seller"
+              className="group rounded-2xl border border-rose-100 bg-white p-4 transition hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-sm"
+            >
+              <FiPackage className="text-xl text-primary-700" />
+              <h3 className="mt-3 font-semibold text-gray-900">Seller Dashboard</h3>
+              <p className="mt-1 text-sm text-gray-600">List inventory and manage products in the marketplace.</p>
+            </Link>
+
+            <Link
               href="/products"
               className="group rounded-2xl border border-rose-100 bg-white p-4 transition hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-sm"
             >
